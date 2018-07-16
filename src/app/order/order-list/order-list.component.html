@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <section>
+        <header class="header">
+          <div class="row">
+            <div class="col-md-4">
+              <h1>Verify Orders</h1>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+            <div class="col-md-2">
+
+            </div>
+          </div>
+
+        </header>
+      </section>
+
+      <section class="main">
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Date</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let order of orders">
+            <th scope="row">{{order.orderId}}</th>
+            <td>{{order.customerId}}</td>
+            <td>{{order.orderDate}}</td>
+            <td>
+              <button type="button" class="btn btn-success" (click)="verifyOrderPage(order)">Verify</button>
+            </td>
+          </tr>
+
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
