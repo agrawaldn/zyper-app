@@ -14,7 +14,7 @@ export class VideoService {
   constructor(private http: Http) {
   }
 
-  findById(id: string): Observable<String[]> {
+  findById(id: string): Observable<string[]> {
      return this.http.get(this.apiUrl + '/' + id)
        .map((res:Response) => res.json())
        .catch((error:any) => Observable.throw(error.json().error || 'Error'));

@@ -5,10 +5,8 @@ import { OrderService } from "../order.service";
 import { VideoService } from "../video.service";
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import { HashMap } from "hashmap";
+//import { HashMap } from "hashmap";
 import { ViewChild, ElementRef } from '@angular/core';
-//declare var Whammy: any;
-//declare var vid: any;
 
 @Component({
   selector: 'app-order-verify',
@@ -19,16 +17,22 @@ import { ViewChild, ElementRef } from '@angular/core';
 export class OrderVerifyComponent implements OnInit {
   @ViewChild('myCanvas') canvasRef: ElementRef;
 
-  order: Order;
+  order: Order = new Order(0,"",0,[new OrderItem(0,"","",0,0,0)]);
   id: number;
   private sub: any;
-  //videoMap: HashMap;
-  imageList: String[];
+  imageList: string[] = [""];
+  imageSeq: number;
+  //myMap: any;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
-              private videoService: VideoService) { }
+              private videoService: VideoService) {
+
+                //this.myMap = new Map();
+                this.buildImageList('728312070375');
+
+               }
 
   ngOnInit() {
 
@@ -45,26 +49,39 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
-     //this.videoMap = new HashMap();
-     this.videoService.findById('728312070375').subscribe(
-       images => {
-           this.imageList = images;
-        },error => {
-         console.log(error);
-        }
-     )
-     this.initCanvas();
-//     this.videoMap.set('728312070375',this.imageList);
-     //vid = new Whammy.Video(this.imageList);
-     //vid.compile();
+
+     this.imageSeq = -1;
+     this.loadImage(this.imageList[0]);
+     // TODO: initial image is blank
   }
 
-  initCanvas() {
-    let ctx: CanvasRenderingContext2D =
-    this.canvasRef.nativeElement.getContext('2d');
+  buildImageList(cameraId: string){
+    this.videoService.findById(cameraId).subscribe(
+      images => {
+          this.imageList = images;
+       },error => {
+        console.log(error);
+       }
+    )
+
+  }
+
+
+  loadImage(imageURL: string) {
+    let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
     let background: HTMLImageElement = new Image();
-    background.src = "http://localhost/camera/728312070375/728312070375_1531352500_025-clr.jpg";
-    ctx.drawImage(background,0,0);
+    background.src = imageURL;
+    ctx.clearRect(0, 0, 700, 500);
+    background.onload = function() {
+      ctx.drawImage(background,0,0);
+    };
+  }
+
+  onKeyDownEvent(event){
+    this.imageSeq++;
+    if(this.imageSeq < this.imageList.length){
+      this.loadImage(this.imageList[this.imageSeq]);
+    }
   }
 
   onSubmit(){

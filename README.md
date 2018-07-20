@@ -1,3 +1,9 @@
+# DEV Environment setup
+Run git clone to download project
+'cd zyper-app'
+Run 'npm install' to download dependencies
+Run 'ng serve' to start the server
+
 # ZyperApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.

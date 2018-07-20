@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ZYP - Checkout-less Shopping';
+  title = 'ZYP - Checkout Less Shopping!';
 }

@@ -22,18 +22,15 @@
 <table class="table">
 <tr>
   <td>
-    <!-- video player start-->
-
+    <!-- image display start-->
+  <div id="imageCanvasDiv" class="item" (click)="onKeyDownEvent($event)">
     <canvas #myCanvas width="700" height="500">
     </canvas>
+    
+  </div>
 
-<!--        <div id="VideoCanvasDiv" class="item" onkeydown="{this.handleKeyPress.bind(this)}">
-          <canvas style="canvas-style" id="VideoCanvas">
-          </canvas>
-        </div>
--->
 
-    <!-- video player end-->
+    <!-- image display end-->
   </td>
 <td>
 <!-- Items header -->
@@ -82,7 +79,7 @@
   </table>
     <button type="submit" class="btn btn-success" (click)="onSubmit()">Update & Verify</button>
     <button type="button" class="btn btn-warning" (click)="redirectOrderPage()">Verify No Change</button>
-    <pre>{{orderForm.value | json}}</pre>
+    <!--<pre>{{orderForm.value | json}}</pre>-->
   </form>
 </div>
 </td>
