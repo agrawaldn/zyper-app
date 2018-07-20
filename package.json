@@ -23,6 +23,7 @@
     "bootstrap": "^4.1.2",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
+    "hashmap": "^2.3.0",
     "rxjs": "^6.2.1",
     "rxjs-compat": "^6.2.1",
     "zone.js": "^0.8.26"
