@@ -23,10 +23,19 @@
 <tr>
   <td>
     <!-- image display start-->
-  <div id="imageCanvasDiv" class="item" (click)="onKeyDownEvent($event)">
-    <canvas #myCanvas width="700" height="500">
+  <div id="imageCanvasDiv" class="item" (keydown.arrowright)="onRightArrowDown()"
+      (keydown.arrowleft)="onLeftArrowDown()">
+    <canvas #myCanvas class="canvas-style">
     </canvas>
-    
+    <table class="table">
+      <tr>
+        <td>
+          <label> Camera ID: </label> {{cameraInFocus}}
+        </td><td>
+          <button type="button" align="center" class="btn btn-primary" (click)="switchCamera()">Switch Camera</button>
+        </td>
+      </tr>
+    </table>
   </div>
 
 

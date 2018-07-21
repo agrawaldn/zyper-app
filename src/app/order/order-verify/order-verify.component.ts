@@ -2,17 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { Order } from "../Order";
 import { OrderItem } from "../OrderItem";
 import { OrderService } from "../order.service";
-import { VideoService } from "../video.service";
+import { ImageService } from "../image.service";
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-//import { HashMap } from "hashmap";
 import { ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-order-verify',
   templateUrl: './order-verify.component.html',
   styleUrls: ['./order-verify.component.css'],
-  providers: [OrderService, VideoService]
+  providers: [OrderService, ImageService]
 })
 export class OrderVerifyComponent implements OnInit {
   @ViewChild('myCanvas') canvasRef: ElementRef;
@@ -20,19 +19,16 @@ export class OrderVerifyComponent implements OnInit {
   order: Order = new Order(0,"",0,[new OrderItem(0,"","",0,0,0)]);
   id: number;
   private sub: any;
-  imageList: string[] = [""];
   imageSeq: number;
-  //myMap: any;
+  cnt: number = 0;
+  cameraInFocus: string;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
-              private videoService: VideoService) {
+              private imageService: ImageService) {
 
-                //this.myMap = new Map();
-                this.buildImageList('728312070375');
-
-               }
+  }
 
   ngOnInit() {
 
@@ -49,25 +45,15 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
-
+     this.cameraInFocus = this.imageService.cameraList[this.cnt];
      this.imageSeq = -1;
-     this.loadImage(this.imageList[0]);
+     this.loadImage(this.imageService.getImage(this.cameraInFocus,0));
      // TODO: initial image is blank
-  }
-
-  buildImageList(cameraId: string){
-    this.videoService.findById(cameraId).subscribe(
-      images => {
-          this.imageList = images;
-       },error => {
-        console.log(error);
-       }
-    )
 
   }
-
 
   loadImage(imageURL: string) {
+    //console.log("loading image: "+imageURL);
     let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
     let background: HTMLImageElement = new Image();
     background.src = imageURL;
@@ -77,13 +63,35 @@ export class OrderVerifyComponent implements OnInit {
     };
   }
 
-  onKeyDownEvent(event){
+  onRightArrowDown(){
+    let cameraId: string = this.imageService.cameraList[this.cnt];
     this.imageSeq++;
-    if(this.imageSeq < this.imageList.length){
-      this.loadImage(this.imageList[this.imageSeq]);
+    if(this.imageSeq < this.imageService.getImageListLength(cameraId)){
+      this.loadImage(this.imageService.getImage(cameraId,this.imageSeq));
+    }else{
+      this.imageSeq = -1;
     }
   }
 
+  onLeftArrowDown(){
+    let cameraId: string = this.imageService.cameraList[this.cnt];
+    this.imageSeq--;
+    if(this.imageSeq > 0){
+      this.loadImage(this.imageService.getImage(cameraId,this.imageSeq));
+    }else{
+      this.imageSeq = 0;
+    }
+  }
+
+  switchCamera(){
+    this.cnt++;
+    this.imageSeq = -1;
+    if(this.cnt == this.imageService.cameraList.length){
+      this.cnt = 0;
+    }
+    this.cameraInFocus = this.imageService.cameraList[this.cnt];
+    this.onRightArrowDown();
+  }
   onSubmit(){
     this.orderService.updateOrder(this.order).subscribe();
     this.redirectOrderPage();
