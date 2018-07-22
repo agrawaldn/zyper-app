@@ -16,8 +16,8 @@ import { ViewChild, ElementRef } from '@angular/core';
 export class OrderVerifyComponent implements OnInit {
   @ViewChild('myCanvas') canvasRef: ElementRef;
 
-  order: Order = new Order(0,"",0,[new OrderItem(0,"","",0,0,0)]);
-  id: number;
+  order: Order = new Order("","","","",[new OrderItem("",0)]);
+  id: string;
   private sub: any;
   imageSeq: number;
   cnt: number = 0;
@@ -45,6 +45,7 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
+     this.imageService.getAllImages(this.id);
      this.cameraInFocus = this.imageService.cameraList[this.cnt];
      this.imageSeq = -1;
      this.loadImage(this.imageService.getImage(this.cameraInFocus,0));
@@ -98,12 +99,12 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   onItemAdd(){
-    let newItem = new OrderItem(-1,"","",0,0,0);
+    let newItem = new OrderItem("",-1);
     this.order.orderItems.push(newItem);
   }
 
   onItemDelete(orderItem: OrderItem){
-    this.order.orderItems = this.order.orderItems.filter(x => x.orderItemId !== orderItem.orderItemId);
+    this.order.orderItems = this.order.orderItems.filter(x => x.productDesc !== orderItem.productDesc);
   }
 
   redirectOrderPage() {

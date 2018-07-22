@@ -1,18 +1,9 @@
 export class OrderItem{
- orderItemId: number;
- product: string;
- comment: string;
- quantity: number;
- weight: number;
- unitPrice: number;
+ productDesc: string;
+ productId: number;
 
- constructor(orderItemId: number, product: string, comment: string, quantity: number, weight: number, unitPrice: number){
-  this.orderItemId = orderItemId;
-  this.product = product;
-  this.comment = comment;
-  this.quantity = quantity;
-  this.weight = weight;
-  this.unitPrice = unitPrice;
-
+ constructor(productDesc: string, productId: number){
+  this.productId = productId;
+  this.productDesc = productDesc;
  }
 }

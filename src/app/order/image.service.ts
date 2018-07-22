@@ -15,24 +15,28 @@ export class ImageService {
   private apiUrl = 'http://localhost:8080/images';
 
   constructor(private http: Http) {
-    this.getAllImages();
+    //this.getAllImages();
   }
 
-  findAll(): Observable<OrderImage[]>  {
-    return this.http.get(this.apiUrl)
+  // findAll(): Observable<OrderImage[]>  {
+  //   return this.http.get(this.apiUrl)
+  //     .map((res:Response) => res.json())
+  //     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  // }
+  findAll(id: string): Observable<OrderImage[]>  {
+    return this.http.get(this.apiUrl+ '/' + id)
       .map((res:Response) => res.json())
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
+  // findById(id: string): Observable<OrderImage> {
+  //    return this.http.get(this.apiUrl + '/' + id)
+  //      .map((res:Response) => res.json())
+  //      .catch((error:any) => Observable.throw(error.json().error || 'Error'));
+  //  }
 
-  findById(id: string): Observable<OrderImage> {
-     return this.http.get(this.apiUrl + '/' + id)
-       .map((res:Response) => res.json())
-       .catch((error:any) => Observable.throw(error.json().error || 'Error'));
-   }
 
-
-   getAllImages() {
-     this.findAll().subscribe(
+   getAllImages(orderId: string) {
+     this.findAll(orderId).subscribe(
        images => {
          this.images = images;
        },

@@ -1,15 +1,17 @@
 import { OrderItem } from "./OrderItem";
 
 export class Order{
- orderId: number;
+ orderId: string;
  orderDate: string;
- customerId: number;
+ customerId: string;
  orderItems: OrderItem[];
+ status: string;
 
- constructor(orderId: number, orderDate: string, customerId: number, orderItems: OrderItem[]){
+ constructor(orderId: string, orderDate: string, customerId: string, status: string, orderItems: OrderItem[]){
   this.orderId = orderId
   this.orderDate = orderDate;
   this.customerId = customerId;
+  this.status = status;
   this.orderItems = orderItems;
 
  }
