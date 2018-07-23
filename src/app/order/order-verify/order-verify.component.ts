@@ -16,7 +16,7 @@ import { ViewChild, ElementRef } from '@angular/core';
 export class OrderVerifyComponent implements OnInit {
   @ViewChild('myCanvas') canvasRef: ElementRef;
 
-  order: Order = new Order("","","","",[new OrderItem("",0)]);
+  order: Order = new Order("","","","",[new OrderItem("",0,0)]);
   id: string;
   private sub: any;
   imageSeq: number;
@@ -99,7 +99,7 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   onItemAdd(){
-    let newItem = new OrderItem("",-1);
+    let newItem = new OrderItem("",-1,0);
     this.order.orderItems.push(newItem);
   }
 

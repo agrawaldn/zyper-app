@@ -68,6 +68,7 @@
     <thead>
     <tr>
       <th>Product</th>
+      <th>Quantity</th>
       <th></th>
     </tr>
     </thead>
@@ -75,6 +76,9 @@
     <tr *ngFor="let orderItem of order.orderItems">
       <td>
         <input [value]="orderItem.productDesc" (input)="orderItem.productDesc = $event.target.value">
+      </td>
+      <td>
+        <input [value]="orderItem.quantity" (input)="orderItem.quantity = $event.target.value">
       </td>
       <td>
         <button type="button" class="btn btn-danger" (click)="onItemDelete(orderItem)">X</button>
