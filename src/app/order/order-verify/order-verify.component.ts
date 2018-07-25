@@ -45,6 +45,7 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
+     //this.order.orderItems = [new OrderItem("",0,0)];
      this.imageService.getAllImages(this.id);
      this.cameraInFocus = this.imageService.cameraList[this.cnt];
      this.imageSeq = -1;
