@@ -5,6 +5,7 @@ import 'rxjs/add/operator/catch';
 import { Observable } from "rxjs";
 import { HashMap } from "hashmap";
 import { OrderImage } from "./OrderImage";
+import { DatePipe } from '@angular/common';
 
 @Injectable()
 export class ImageService {
@@ -18,22 +19,11 @@ export class ImageService {
     //this.getAllImages();
   }
 
-  // findAll(): Observable<OrderImage[]>  {
-  //   return this.http.get(this.apiUrl)
-  //     .map((res:Response) => res.json())
-  //     .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-  // }
   findAll(id: string): Observable<OrderImage[]>  {
     return this.http.get(this.apiUrl+ '/' + id)
       .map((res:Response) => res.json())
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
-  // findById(id: string): Observable<OrderImage> {
-  //    return this.http.get(this.apiUrl + '/' + id)
-  //      .map((res:Response) => res.json())
-  //      .catch((error:any) => Observable.throw(error.json().error || 'Error'));
-  //  }
-
 
    getAllImages(orderId: string) {
      this.findAll(orderId).subscribe(
@@ -52,6 +42,14 @@ export class ImageService {
         return image.images;
       }
     }
+  }
+  getTimestamp(url: string){
+    let datepipe: DatePipe = new DatePipe('en-us');
+    let arr: string[] = url.split("_",3);
+    let d: Date = new Date(0);
+    d.setUTCSeconds(+arr[1]);
+    let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss');
+    return ds+":"+arr[2].split("-",2)[0];
   }
 
   getImage(cameraId: string, idx: number ){

@@ -1,24 +1,3 @@
-<div class="col-md-4">
-  <h2>Order Summary</h2>
-</div>
-<div>
-  <table class="table">
-    <tr>
-      <td>
-        <label>Order ID: </label>
-      </td><td>  {{order.orderId}}  </td>
-      <td>
-        <label>Customer ID: </label>
-      </td><td>  {{order.customerId}} </td>
-    </tr><tr>
-      <td>
-        <label>Order Date: </label>
-      </td><td>  {{order.orderDate}} </td>
-      <td><label>Status: </label></td>
-      <td>{{order.status}}</td>
-    </tr>
-  </table>
-</div>
 
 <table class="table">
 <tr>
@@ -35,6 +14,9 @@
         </td><td>
           <button type="button" align="center" class="btn btn-primary" (click)="switchCamera()">Switch Camera</button>
         </td>
+        <td>
+          <label> {{timestamp}} </label>
+        </td>
       </tr>
     </table>
   </div>
@@ -43,55 +25,183 @@
     <!-- image display end-->
   </td>
 <td>
-<!-- Items header -->
-  <section>
-    <header class="header">
-      <div class="row">
-        <div class="col-md-4">
-          <h1>Items</h1>
-        </div>
-        <div class="col-md-4">
-
-        </div>
-        <div class="col-md-2">
-          <button type="button" class="btn btn-primary" (click)="onItemAdd()">Add Item</button>
-        </div>
-      </div>
-
-    </header>
-  </section>
-<!-- Items details/rows -->
+<div class="col-md-4">
+  <h3>Order Summary</h3>
+</div>
 <div>
-  <form novalidate (ngSubmit)="onSubmit()">
-
   <table class="table">
-    <thead>
     <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th></th>
+      <td>
+        <label>Order ID: </label>
+      </td><td>  {{order.orderId}}  </td>
     </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let orderItem of order.orderItems">
+    <tr>
       <td>
-        <input [value]="orderItem.productDesc" (input)="orderItem.productDesc = $event.target.value">
-      </td>
-      <td>
-        <input [value]="orderItem.quantity" (input)="orderItem.quantity = $event.target.value">
-      </td>
-      <td>
-        <button type="button" class="btn btn-danger" (click)="onItemDelete(orderItem)">X</button>
-      </td>
+        <label>Customer ID: </label>
+      </td><td>  {{order.customerId}} </td>
     </tr>
-
-    </tbody>
+    <tr>
+      <td>
+        <label>Order Date: </label>
+      </td>
+      <td>  {{order.orderDate}} </td>
+    </tr>
+    <tr>
+      <td><label>Status: </label></td>
+      <td>{{order.status}}</td>
+    </tr>
   </table>
-    <button type="submit" class="btn btn-success" (click)="onSubmit()">Submit</button>
-    <button type="button" class="btn btn-warning" (click)="redirectOrderPage()">Cancel</button>
-    <!--<pre>{{orderForm.value | json}}</pre>-->
-  </form>
 </div>
 </td>
+
 </tr>
 </table>
+<section>
+  <header class="header">
+    <div class="row">
+      <div class="col-md-4">
+        <h4>Add Annotatations For Current Frame</h4>
+      </div>
+      <div class="col-md-4">
+
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-primary" (click)="onAddAnnotation()">Add Annotation</button>
+      </div>
+    </div>
+
+  </header>
+</section>
+<div>
+<form novalidate (ngSubmit)="onSaveAnnotation()">
+
+<table class="table">
+  <thead>
+  <tr>
+<!--    <th></th> -->
+    <th></th>
+    <th>Left Hand</th>
+    <th></th>
+    <th></th>
+    <th>Right Hand</th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let evnt of order.orderAnnotations">
+<!--    <td>
+      <label>Camera    :</label><input disabled [value]="evnt.cameraId" (input)="evnt.cameraId = $event.target.value"/>
+      <br><label>Timestamp:</label><input disabled [value]="evnt.timestamp" (input)="evnt.timestamp = $event.target.value"/>
+    </td>
+-->
+    <td>
+      <label>Hand In   :</label><input type="checkbox" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
+      <br><label>Hand Out:</label><input type="checkbox" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
+    </td>
+    <td>
+      <label>Add:</label>
+      <label>
+          <input type="radio" name="lproductAddRemove" [value]="true" [(ngModel)]="evnt.lprodAdd">
+      </label>
+      <label>Remove:</label>
+      <label>
+          <input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd">
+      </label>
+    </td>
+    <td>
+      <label>Product :</label><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">
+      <br><label>Quantity:</label><input type="text" [value]="evnt.lquantity" (input)="evnt.lquantity = $event.target.value">
+    </td>
+    <td>
+      <label>Hand In  :</label><input type="checkbox" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
+      <br><label>Hand Out:</label><input type="checkbox" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
+    </td>
+    <td>
+      <label>Add:</label>
+      <label>
+          <input type="radio" name="rproductAddRemove" [value]="true" [(ngModel)]="evnt.rprodAdd">
+      </label>
+      <label>Remove:</label>
+      <label>
+          <input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd">
+      </label>
+      <label>Product :</label><input type="text" size="10" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">
+      <br><label>Quantity:</label><input type="text" size="5" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
+    </td>
+    <td>
+      <button type="submit" class="btn btn-success" (click)="onSaveAnnotation(evnt)">✓</button>
+      <button type="button" class="btn btn-danger" (click)="onAnnotationRemove(evnt)">X</button>
+    </td>
+  </tr>
+</tbody>
+</table>
+</form>
+</div>
+
+
+
+
+
+<!--Event list-->
+
+<section>
+  <header class="header">
+    <div class="row">
+      <div class="col-md-4">
+        <h4>All Annotations For Curernt Order</h4>
+      </div>
+      <div class="col-md-4">
+
+      </div>
+    </div>
+
+  </header>
+</section>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Camera</th>
+    <th>Timestamp</th>
+    <th>Movements</th>
+    <th>Products Add Left Hand</th>
+    <th>Products Add Right Hand</th>
+    <th>Products Remove Left Hand</th>
+    <th>Products Remove Right Hand</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let ev of order.orderEvents">
+    <td>
+      {{ev.camera}}
+    </td>
+    <td>
+      {{ev.timestamp}}
+    </td>
+    <td>
+      {{ev.movements}}
+    </td>
+    <td>
+      {{ev.lproductAdded}}
+    </td>
+    <td>
+      {{ev.rproductAdded}}
+    </td>
+    <td>
+      {{ev.lproductRemoved}}
+    </td>
+    <td>
+      {{ev.rproductRemoved}}
+    </td>
+    <td>
+      <button type="button" class="btn btn-danger" (click)="onEventDelete(ev)">X</button>
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+<button type="submit" class="btn btn-success" (click)="onSubmit()">Submit</button>
+<button type="button" class="btn btn-warning" (click)="redirectOrderPage()">Cancel</button>

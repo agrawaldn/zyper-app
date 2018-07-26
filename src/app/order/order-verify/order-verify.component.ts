@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Order } from "../Order";
 import { OrderItem } from "../OrderItem";
+import { OrderAnnotation } from "../OrderAnnotation";
+import { OrderEvent } from "../OrderEvent";
 import { OrderService } from "../order.service";
 import { ImageService } from "../image.service";
 import {ActivatedRoute, Router} from '@angular/router';
@@ -22,6 +24,7 @@ export class OrderVerifyComponent implements OnInit {
   imageSeq: number;
   cnt: number = 0;
   cameraInFocus: string;
+  timestamp: string;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -45,7 +48,7 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
-     //this.order.orderItems = [new OrderItem("",0,0)];
+     //this.order.orderEvents = [new OrderEvent("CAM1","TIMESTAMP1"),new OrderEvent("CAM2","TIMESTAMP2")];
      this.imageService.getAllImages(this.id);
      this.cameraInFocus = this.imageService.cameraList[this.cnt];
      this.imageSeq = -1;
@@ -55,14 +58,15 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   loadImage(imageURL: string) {
-    //console.log("loading image: "+imageURL);
     let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
-    let background: HTMLImageElement = new Image();
-    background.src = imageURL;
-    ctx.clearRect(0, 0, 700, 500);
-    background.onload = function() {
-      ctx.drawImage(background,0,0);
-    };
+    var canvas = ctx.canvas ;
+    let img: HTMLImageElement = new Image();
+    img.src = imageURL;
+    //ctx.clearRect(0, 0, 960, 540);
+   img.onload = function() {
+      ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
+   };
+    this.timestamp = this.imageService.getTimestamp(imageURL);
   }
 
   onRightArrowDown(){
@@ -99,17 +103,75 @@ export class OrderVerifyComponent implements OnInit {
     this.redirectOrderPage();
   }
 
-  onItemAdd(){
-    let newItem = new OrderItem("",-1,0);
-    this.order.orderItems.push(newItem);
+  onAddAnnotation(){
+    let e = new OrderAnnotation(this.cameraInFocus,this.timestamp);
+    e.lhi = false;
+    e.lho = false;
+    e.rhi = false;
+    e.rho = false;
+    e.lprodAdd = false;
+    e.rprodAdd = false;
+    e.lproduct = "";
+    e.lquantity= 0;
+    e.rproduct = "";
+    e.rquantity= 0;
+    if(this.order.orderAnnotations == undefined){
+        this.order.orderAnnotations = new Array<OrderAnnotation>();
+    }
+    this.order.orderAnnotations.push(e);
+    // this.onLeftArrowDown();
+    // this.onRightArrowDown();
   }
 
-  onItemDelete(orderItem: OrderItem){
-    this.order.orderItems = this.order.orderItems.filter(x => x.productDesc !== orderItem.productDesc);
+  onAnnotationRemove(orderAnnotation: OrderAnnotation){
+    this.order.orderAnnotations = this.order.orderAnnotations.filter(x => x.timestamp !== orderAnnotation.timestamp);
+    // this.onLeftArrowDown();
+    // this.onRightArrowDown();
+  }
+
+  onEventDelete(oe: OrderEvent){
+    this.order.orderEvents = this.order.orderEvents.filter(x => x.timestamp !== oe.timestamp);
+  }
+
+  onSaveAnnotation(orderAnnotation: OrderAnnotation){
+    if(this.order.orderEvents == undefined){
+      this.order.orderEvents = new Array<OrderEvent>();
+    }
+    let oe: OrderEvent = new OrderEvent(orderAnnotation.camera,orderAnnotation.timestamp);
+    oe.movements="";
+    if(orderAnnotation.lhi){
+      oe.movements = oe.movements+":lhi";
+    }
+    if(orderAnnotation.lho){
+      oe.movements = oe.movements+":lho";
+    }
+    if(orderAnnotation.rhi){
+      oe.movements = oe.movements+":rhi";
+    }
+    if(orderAnnotation.rho){
+      oe.movements = oe.movements+":rho";
+    }
+    let lprod: string = orderAnnotation.lproduct+" qty:"+orderAnnotation.lquantity;
+    if(orderAnnotation.lprodAdd){
+      oe.lproductAdded = lprod;
+    }else{
+      oe.lproductRemoved = lprod;
+    }
+    let rprod: string = orderAnnotation.rproduct+" qty:"+orderAnnotation.rquantity;
+    if(orderAnnotation.rprodAdd){
+      oe.rproductAdded = rprod;
+    }else{
+      oe.rproductRemoved = rprod;
+    }
+    this.order.orderEvents.push(oe);
+    this.order.orderAnnotations = new Array<OrderAnnotation>();
+    // this.onLeftArrowDown();
+    // this.onRightArrowDown();
   }
 
   redirectOrderPage() {
     this.router.navigate(['/order']);
 
   }
+
 }
