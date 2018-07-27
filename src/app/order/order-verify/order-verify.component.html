@@ -59,15 +59,7 @@
 <section>
   <header class="header">
     <div class="row">
-      <div class="col-md-4">
-        <h4>Add Annotatations For Current Frame</h4>
-      </div>
-      <div class="col-md-4">
-
-      </div>
-      <div class="col-md-2">
-        <button type="button" class="btn btn-primary" (click)="onAddAnnotation()">Add Annotation</button>
-      </div>
+        <button type="button" class="btn btn-primary" (click)="onAddAnnotation()">Add Annotation On Frame</button>
     </div>
 
   </header>
@@ -75,67 +67,52 @@
 <div>
 <form novalidate (ngSubmit)="onSaveAnnotation()">
 
-<table class="table">
-  <thead>
-  <tr>
-<!--    <th></th> -->
-    <th></th>
-    <th>Left Hand</th>
-    <th></th>
-    <th></th>
-    <th>Right Hand</th>
-    <th></th>
-    <th></th>
-  </tr>
-  </thead>
-
-  <tbody>
+<table>
   <tr *ngFor="let evnt of order.orderAnnotations">
-<!--    <td>
-      <label>Camera    :</label><input disabled [value]="evnt.cameraId" (input)="evnt.cameraId = $event.target.value"/>
-      <br><label>Timestamp:</label><input disabled [value]="evnt.timestamp" (input)="evnt.timestamp = $event.target.value"/>
-    </td>
+    <td>
+      <table class="table">
+        <tr>
+          <td><label><b>Left Hand</b> In:</label>
+                <input type="checkbox" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
+          </td><td><label>Out:</label>
+                <input type="checkbox" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
+          </td><td><label>Add:</label>
+                <label><input type="radio" name="lproductAddRemove" [value]="true" [(ngModel)]="evnt.lprodAdd"></label>
+          </td><td><label>Remove:</label>
+                <label><input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd"></label>
+          </td><td><label>Product:</label>
+          </td><td><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">
+<!--          <div class="search-results">
+            <input [value]="search" ngxTypeahead [taUrl]="url" [taParams]="params"
+                              (taSelected)="handleResultSelected($event)"/>
+          </div>
 -->
-    <td>
-      <label>Hand In   :</label><input type="checkbox" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
-      <br><label>Hand Out:</label><input type="checkbox" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
-    </td>
-    <td>
-      <label>Add:</label>
-      <label>
-          <input type="radio" name="lproductAddRemove" [value]="true" [(ngModel)]="evnt.lprodAdd">
-      </label>
-      <label>Remove:</label>
-      <label>
-          <input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd">
-      </label>
-    </td>
-    <td>
-      <label>Product :</label><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">
-      <br><label>Quantity:</label><input type="text" [value]="evnt.lquantity" (input)="evnt.lquantity = $event.target.value">
-    </td>
-    <td>
-      <label>Hand In  :</label><input type="checkbox" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
-      <br><label>Hand Out:</label><input type="checkbox" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
-    </td>
-    <td>
-      <label>Add:</label>
-      <label>
-          <input type="radio" name="rproductAddRemove" [value]="true" [(ngModel)]="evnt.rprodAdd">
-      </label>
-      <label>Remove:</label>
-      <label>
-          <input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd">
-      </label>
-      <label>Product :</label><input type="text" size="10" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">
-      <br><label>Quantity:</label><input type="text" size="5" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
+          </td><td><label>Quantity:</label>
+          </td><td><input type="text" [value]="evnt.lquantity" (input)="evnt.lquantity = $event.target.value">
+          </td>
+        </tr><tr>
+        <td><label><b>Right Hand</b> In:</label>
+              <input type="checkbox" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
+            </td><td><label>Out:</label>
+                <input type="checkbox" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
+
+        </td><td><label>Add:</label>
+              <label><input type="radio" name="rproductAddRemove" [value]="true" [(ngModel)]="evnt.rprodAdd"></label>
+          </td><td><label>Remove:</label>
+              <label><input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd"></label>
+        </td><td><label>Product:</label>
+        </td><td><input type="text" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">
+          </td><td><label>Quantity:</label>
+          </td><td><input type="text" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
+          </td>
+        </tr>
+      </table>
     </td>
     <td>
       <button type="submit" class="btn btn-success" (click)="onSaveAnnotation(evnt)">✓</button>
       <button type="button" class="btn btn-danger" (click)="onAnnotationRemove(evnt)">X</button>
     </td>
   </tr>
-</tbody>
 </table>
 </form>
 </div>
@@ -145,7 +122,7 @@
 
 
 <!--Event list-->
-
+<div>
 <section>
   <header class="header">
     <div class="row">
@@ -166,10 +143,12 @@
     <th>Camera</th>
     <th>Timestamp</th>
     <th>Movements</th>
-    <th>Products Add Left Hand</th>
-    <th>Products Add Right Hand</th>
-    <th>Products Remove Left Hand</th>
-    <th>Products Remove Right Hand</th>
+    <th>Left Hand Add</th>
+    <th>Left Hand Remove</th>
+    <th>Quantity</th>
+    <th>Right Hand Add</th>
+    <th>Right Hand Remove</th>
+    <th>Quantity</th>
     <th></th>
   </tr>
   </thead>
@@ -188,20 +167,41 @@
       {{ev.lproductAdded}}
     </td>
     <td>
-      {{ev.rproductAdded}}
+      {{ev.lproductRemoved}}
     </td>
     <td>
-      {{ev.lproductRemoved}}
+      {{ev.lproductQuantity}}
+    </td>
+    <td>
+      {{ev.rproductAdded}}
     </td>
     <td>
       {{ev.rproductRemoved}}
     </td>
     <td>
+      {{ev.rproductQuantity}}
+    </td>
+    <td>
       <button type="button" class="btn btn-danger" (click)="onEventDelete(ev)">X</button>
     </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>
+    <button type="button" class="btn btn-success" (click)="onSubmit()">Submit</button>
+  </td>
+<td>
+
+  <button type="button" class="btn btn-warning" (click)="redirectOrderPage()">Cancel</button>
+</td>
+<td></td>
+<td></td>
+<td></td>
   </tr>
 
   </tbody>
 </table>
-<button type="submit" class="btn btn-success" (click)="onSubmit()">Submit</button>
-<button type="button" class="btn btn-warning" (click)="redirectOrderPage()">Cancel</button>
+</div>

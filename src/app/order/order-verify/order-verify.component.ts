@@ -25,7 +25,17 @@ export class OrderVerifyComponent implements OnInit {
   cnt: number = 0;
   cameraInFocus: string;
   timestamp: string;
-
+/*
+  public url = 'http://localhost:8080/lookup/product';
+  params = {
+  hl: 'en',
+  ds: 'yt',
+  xhr: 't',
+  client: 'youtube'
+};
+  public search = 'oren';
+  result$;
+*/
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
@@ -112,9 +122,9 @@ export class OrderVerifyComponent implements OnInit {
     e.lprodAdd = false;
     e.rprodAdd = false;
     e.lproduct = "";
-    e.lquantity= 0;
+    //e.lquantity= "";
     e.rproduct = "";
-    e.rquantity= 0;
+    //e.rquantity= "";
     if(this.order.orderAnnotations == undefined){
         this.order.orderAnnotations = new Array<OrderAnnotation>();
     }
@@ -140,24 +150,27 @@ export class OrderVerifyComponent implements OnInit {
     let oe: OrderEvent = new OrderEvent(orderAnnotation.camera,orderAnnotation.timestamp);
     oe.movements="";
     if(orderAnnotation.lhi){
-      oe.movements = oe.movements+":lhi";
+      oe.movements = oe.movements+"lhi ";
     }
     if(orderAnnotation.lho){
-      oe.movements = oe.movements+":lho";
+      oe.movements = oe.movements+"lho ";
     }
     if(orderAnnotation.rhi){
-      oe.movements = oe.movements+":rhi";
+      oe.movements = oe.movements+"rhi ";
     }
     if(orderAnnotation.rho){
-      oe.movements = oe.movements+":rho";
+      oe.movements = oe.movements+"rho ";
     }
-    let lprod: string = orderAnnotation.lproduct+" qty:"+orderAnnotation.lquantity;
+    let lprod: string = orderAnnotation.lproduct;
+    oe.lproductQuantity = orderAnnotation.lquantity;
+
     if(orderAnnotation.lprodAdd){
       oe.lproductAdded = lprod;
     }else{
       oe.lproductRemoved = lprod;
     }
-    let rprod: string = orderAnnotation.rproduct+" qty:"+orderAnnotation.rquantity;
+    let rprod: string = orderAnnotation.rproduct;
+    oe.rproductQuantity = orderAnnotation.rquantity;
     if(orderAnnotation.rprodAdd){
       oe.rproductAdded = rprod;
     }else{
@@ -168,6 +181,10 @@ export class OrderVerifyComponent implements OnInit {
     // this.onLeftArrowDown();
     // this.onRightArrowDown();
   }
+
+  // handleResultSelected(result) {
+  //   this.search = result;
+  // }
 
   redirectOrderPage() {
     this.router.navigate(['/order']);

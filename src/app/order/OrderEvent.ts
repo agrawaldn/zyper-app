@@ -3,10 +3,14 @@ export class OrderEvent{
   camera: string;
   timestamp: string;
   movements: string;
+
   lproductAdded: string;
   lproductRemoved: string;
+  lproductQuantity: number;
+
   rproductAdded: string;
   rproductRemoved: string;
+  rproductQuantity: number;
 
  constructor(camera: string, timestamp: string){
   this.camera = camera;
