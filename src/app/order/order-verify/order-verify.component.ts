@@ -6,18 +6,23 @@ import { OrderAnnotation } from "../OrderAnnotation";
 import { OrderEvent } from "../OrderEvent";
 import { OrderService } from "../order.service";
 import { ImageService } from "../image.service";
-import {ActivatedRoute, Router} from '@angular/router';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import { ActivatedRoute, Router} from '@angular/router';
+import { FormControl, FormGroup, Validators} from "@angular/forms";
 import { ViewChild, ElementRef } from '@angular/core';
+import { Product } from "../Product";
+import { LookupService } from "../lookup.service";
 
 @Component({
   selector: 'app-order-verify',
   templateUrl: './order-verify.component.html',
   styleUrls: ['./order-verify.component.css'],
-  providers: [OrderService, ImageService]
+  providers: [OrderService, ImageService, LookupService]
 })
 export class OrderVerifyComponent implements OnInit {
   @ViewChild('myCanvas') canvasRef: ElementRef;
+
+  //selectedProduct:Product = new Product('-1', 'Select Product');
+  products: Product[];
 
   order: Order = new Order("","","","",[new OrderItem("",0,0)]);
   id: string;
@@ -40,7 +45,8 @@ export class OrderVerifyComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
-              private imageService: ImageService) {
+              private imageService: ImageService,
+              private lookupService: LookupService) {
 
   }
 
@@ -59,6 +65,14 @@ export class OrderVerifyComponent implements OnInit {
        }
       );
      }
+     //populate product dropdown
+     this.lookupService.lookupProducts().subscribe(
+     products => {
+         this.products = products;
+      },error => {
+       console.log(error);
+      }
+     );
      //this.order.orderEvents = [new OrderEvent("CAM1","TIMESTAMP1"),new OrderEvent("CAM2","TIMESTAMP2")];
      this.imageService.getAllImages(this.id);
      this.cameraInFocus = this.imageService.getCameraId(this.cnt);
@@ -113,7 +127,8 @@ export class OrderVerifyComponent implements OnInit {
   switchCamera(){
     this.cnt++;
     this.imageSeq = -1;
-    if(this.cnt == this.imageService.getImageListLength(this.imageService.getCameraId(this.cnt))){
+
+    if(this.cnt == this.imageService.getNoOfCameras()){
       this.cnt = 0;
     }
     this.cameraInFocus = this.imageService.getCameraId(this.cnt);

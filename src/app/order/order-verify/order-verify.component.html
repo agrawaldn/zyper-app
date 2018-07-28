@@ -81,7 +81,13 @@
           </td><td><label>Remove:</label>
                 <label><input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd"></label>
           </td><td><label>Product:</label>
-          </td><td><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">
+          <!--</td><td><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">-->
+          </td><td>
+            <select name="lproduct" [(ngModel)]="evnt.lproduct">
+              <option *ngFor="let product of products" value= {{product.productId}}>
+                {{product.productDesc}}
+              </option>
+            </select>
 <!--          <div class="search-results">
             <input [value]="search" ngxTypeahead [taUrl]="url" [taParams]="params"
                               (taSelected)="handleResultSelected($event)"/>
@@ -101,7 +107,14 @@
           </td><td><label>Remove:</label>
               <label><input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd"></label>
         </td><td><label>Product:</label>
-        </td><td><input type="text" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">
+        <!--</td><td><input type="text" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">-->
+        </td><td>
+          <select name="rproduct" [(ngModel)]="evnt.rproduct">
+            <option *ngFor="let product of products" value= {{product.productId}}>
+              {{product.productDesc}}
+            </option>
+          </select>
+
           </td><td><label>Quantity:</label>
           </td><td><input type="text" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
           </td>

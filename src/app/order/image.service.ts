@@ -38,6 +38,9 @@ export class ImageService {
   getCameraId(idx: number): string{
      return this.images[idx].cameraId;
   }
+  getNoOfCameras(): number{
+     return this.images.length;
+  }
   getImageList(cameraId: string): ImageDetail[]{
     for (let image of this.images) {
       if(image.cameraId == cameraId){

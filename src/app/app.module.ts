@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { OrderModule } from './order/order.module';
 import { HttpModule } from '@angular/http';
 
-import { NgxTypeaheadModule } from 'ngx-typeahead';
+//import { NgxTypeaheadModule } from 'ngx-typeahead';
 //import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 @NgModule({
@@ -16,8 +16,8 @@ import { NgxTypeaheadModule } from 'ngx-typeahead';
     BrowserModule,
     AppRoutingModule,
     OrderModule,
-    HttpModule,
-    NgxTypeaheadModule
+    HttpModule
+    //,NgxTypeaheadModule
   ],
   providers: [],
   bootstrap: [AppComponent]
