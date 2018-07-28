@@ -5,12 +5,12 @@ import 'rxjs/add/operator/catch';
 import { Observable } from "rxjs";
 import { HashMap } from "hashmap";
 import { OrderImage } from "./OrderImage";
+import { ImageDetail } from "./ImageDetail";
 import { DatePipe } from '@angular/common';
 
 @Injectable()
 export class ImageService {
 
-  cameraList: string[] = ['728312070375','745212070402','752112070219','819112072121'];
   private images: OrderImage[];
 
   private apiUrl = 'http://localhost:8080/images';
@@ -35,30 +35,37 @@ export class ImageService {
        }
      );
    }
-
-  getImageList(cameraId: string): string[]{
+  getCameraId(idx: number): string{
+     return this.images[idx].cameraId;
+  }
+  getImageList(cameraId: string): ImageDetail[]{
     for (let image of this.images) {
       if(image.cameraId == cameraId){
-        return image.images;
+        return image.imageDetails;
       }
     }
   }
-  getTimestamp(url: string){
+  getTimestamp(cameraId: string, idx: number){
+    let imgList: ImageDetail[] =  this.getImageList(cameraId);
+    return imgList[idx].timestamp;
+  }
+
+  getReadableTimestamp(cameraId: string, idx: number ){
     let datepipe: DatePipe = new DatePipe('en-us');
-    let arr: string[] = url.split("_",3);
     let d: Date = new Date(0);
-    d.setUTCSeconds(+arr[1]);
-    let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss');
-    return ds+":"+arr[2].split("-",2)[0];
+    let ts = this.getTimestamp(cameraId, idx);
+    d.setTime(+ts);
+    let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss.SSS');
+    return ds;
   }
 
   getImage(cameraId: string, idx: number ){
-    let imgList: string[] =  this.getImageList(cameraId);
-    return imgList[idx];
+    let imgList: ImageDetail[] =  this.getImageList(cameraId);
+    return imgList[idx].imageURL;
   }
 
   getImageListLength(cameraId: string): number{
-    let imgList: string[] =  this.getImageList(cameraId);
+    let imgList: ImageDetail[] =  this.getImageList(cameraId);
     return imgList.length;
   }
 }

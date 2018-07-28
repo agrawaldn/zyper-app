@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Order } from "../Order";
 import { OrderItem } from "../OrderItem";
+import { ImageDetail } from "../ImageDetail";
 import { OrderAnnotation } from "../OrderAnnotation";
 import { OrderEvent } from "../OrderEvent";
 import { OrderService } from "../order.service";
@@ -60,40 +61,50 @@ export class OrderVerifyComponent implements OnInit {
      }
      //this.order.orderEvents = [new OrderEvent("CAM1","TIMESTAMP1"),new OrderEvent("CAM2","TIMESTAMP2")];
      this.imageService.getAllImages(this.id);
-     this.cameraInFocus = this.imageService.cameraList[this.cnt];
+     this.cameraInFocus = this.imageService.getCameraId(this.cnt);
      this.imageSeq = -1;
-     this.loadImage(this.imageService.getImage(this.cameraInFocus,0));
+     this.renderCanvas(this.imageService.getImage(this.cameraInFocus,0));
      // TODO: initial image is blank
 
   }
 
-  loadImage(imageURL: string) {
-    let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
-    var canvas = ctx.canvas ;
-    let img: HTMLImageElement = new Image();
-    img.src = imageURL;
-    //ctx.clearRect(0, 0, 960, 540);
-   img.onload = function() {
-      ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
-   };
-    this.timestamp = this.imageService.getTimestamp(imageURL);
+  renderCanvas(cameraId: string) {
+     let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
+     var canvas = ctx.canvas ;
+     let img: HTMLImageElement = new Image();
+     img.src = this.imageService.getImage(cameraId,this.imageSeq);
+     //ctx.clearRect(0, 0, 960, 540);
+     img.onload = function() {
+        ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
+     };
+     let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId);
+     ctx.beginPath();
+     let tx: number = imgList[this.imageSeq].tx;
+     let ty: number = imgList[this.imageSeq].ty;
+     let by: number = imgList[this.imageSeq].by;
+     let bx: number = imgList[this.imageSeq].bx;
+     ctx.rect(tx*.23,ty*.23,(bx-tx)*.23,(by-ty)*.23);
+     ctx.strokeStyle = 'yellow';
+     ctx.stroke();
+     //ctx.fill();
+     this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq);
   }
 
   onRightArrowDown(){
-    let cameraId: string = this.imageService.cameraList[this.cnt];
+    let cameraId: string = this.imageService.getCameraId(this.cnt);
     this.imageSeq++;
     if(this.imageSeq < this.imageService.getImageListLength(cameraId)){
-      this.loadImage(this.imageService.getImage(cameraId,this.imageSeq));
+      this.renderCanvas(cameraId);
     }else{
       this.imageSeq = -1;
     }
   }
 
   onLeftArrowDown(){
-    let cameraId: string = this.imageService.cameraList[this.cnt];
+    let cameraId: string = this.imageService.getCameraId(this.cnt);
     this.imageSeq--;
     if(this.imageSeq > 0){
-      this.loadImage(this.imageService.getImage(cameraId,this.imageSeq));
+      this.renderCanvas(cameraId);
     }else{
       this.imageSeq = 0;
     }
@@ -102,10 +113,10 @@ export class OrderVerifyComponent implements OnInit {
   switchCamera(){
     this.cnt++;
     this.imageSeq = -1;
-    if(this.cnt == this.imageService.cameraList.length){
+    if(this.cnt == this.imageService.getImageListLength(this.imageService.getCameraId(this.cnt))){
       this.cnt = 0;
     }
-    this.cameraInFocus = this.imageService.cameraList[this.cnt];
+    this.cameraInFocus = this.imageService.getCameraId(this.cnt);
     this.onRightArrowDown();
   }
   onSubmit(){

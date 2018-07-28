@@ -1,10 +1,12 @@
+import { ImageDetail } from "./ImageDetail";
+
 export class OrderImage{
  cameraId: string;
- images: string[];
+ imageDetails: ImageDetail[];
 
- constructor(cameraId: string, images: string[]){
+ constructor(cameraId: string, imageDetails: ImageDetail[]){
   this.cameraId = cameraId
-  this.images = images;
+  this.imageDetails = imageDetails;
 
 
  }
