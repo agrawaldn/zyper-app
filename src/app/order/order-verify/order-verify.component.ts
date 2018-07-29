@@ -12,6 +12,7 @@ import { ViewChild, ElementRef } from '@angular/core';
 import { Product } from "../Product";
 import { LookupService } from "../lookup.service";
 import { Shelf } from "../Shelf";
+import { OrderImage } from "../OrderImage";
 
 @Component({
   selector: 'app-order-verify',
@@ -25,12 +26,13 @@ export class OrderVerifyComponent implements OnInit {
   //selectedProduct:Product = new Product('-1', 'Select Product');
   products: Product[];
   shelves: Shelf[];
+  private images: OrderImage[];
 
   order: Order = new Order("","","","",[new OrderItem("",0,0)]);
   id: string;
   private sub: any;
   imageSeq: number;
-  cnt: number = 0;
+  cnt: number;
   cameraInFocus: string;
   timestamp: string;
 
@@ -43,10 +45,28 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.imageSeq = 0;
+    this.cnt = 0;
     this.sub = this.route.params.subscribe(params => {
       this.id = params['id'];
     });
+
+    //populate product dropdown
+    this.lookupService.lookupProducts().subscribe(
+    products => {
+        this.products = products;
+     },error => {
+      console.log(error);
+     }
+    );
+    //populate shelves
+    this.lookupService.lookupShelves().subscribe(
+    shelves => {
+        this.shelves = shelves;
+     },error => {
+      console.log(error);
+     }
+    );
 
      if (this.id) {
       this.orderService.findById(this.id).subscribe(
@@ -56,29 +76,16 @@ export class OrderVerifyComponent implements OnInit {
         console.log(error);
        }
       );
+
+        this.imageService.findAll(this.id).subscribe(
+          images => {
+            this.images = images;
+          },
+          err => {
+            console.log(err);
+        },() => {this.onLoad()}
+        );
      }
-     //populate product dropdown
-     this.lookupService.lookupProducts().subscribe(
-     products => {
-         this.products = products;
-      },error => {
-       console.log(error);
-      }
-     );
-     //populate shelves
-     this.lookupService.lookupShelves().subscribe(
-     shelves => {
-         this.shelves = shelves;
-      },error => {
-       console.log(error);
-      }
-     );
-     //this.order.orderEvents = [new OrderEvent("CAM1","TIMESTAMP1"),new OrderEvent("CAM2","TIMESTAMP2")];
-     this.imageService.getAllImages(this.id);
-     this.cameraInFocus = this.imageService.getCameraId(this.cnt);
-     this.imageSeq = -1;
-     this.renderCanvas(this.imageService.getImage(this.cameraInFocus,0));
-     // TODO: initial image is blank
 
   }
 
@@ -88,26 +95,23 @@ export class OrderVerifyComponent implements OnInit {
      canvas.width = 1280;
      canvas.height = 720;
      let img: HTMLImageElement = new Image();
-     img.src = this.imageService.getImage(cameraId,this.imageSeq);
+     img.src = this.imageService.getImage(cameraId,this.imageSeq, this.images);
      //ctx.clearRect(0, 0, 960, 540);
 
      img.onload = function() {
         ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
      };
      let shelves: Shelf[] = this.shelves;
-     let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId);
+     let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId, this.images);
      let tx: number = imgList[this.imageSeq].tx;
      let ty: number = imgList[this.imageSeq].ty;
      let by: number = imgList[this.imageSeq].by;
      let bx: number = imgList[this.imageSeq].bx;
      let ratio: number = 1;
      setTimeout(function(){
-                          //console.log("settimeout called");
-                           //ctx.clearRect(0, 0, 960, 540);
                            ctx.font = "15px Arial";
                            //ctx.fillStyle = "red";
                            ctx.strokeStyle = 'red';
-                           //ctx.lineWidth = 0.5;
                            for(let shelf of shelves){
                               let shelfId: string = shelf.id;
                               for(let coord of shelf.shelfCoordinates){
@@ -126,46 +130,23 @@ export class OrderVerifyComponent implements OnInit {
                            ctx.closePath();
 
       },100);
-     //this.markShelves(ctx,cameraId);
-
-     this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq);
+     this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq, this.images);
   }
 
-  // markShelves(ctx: CanvasRenderingContext2D, cameraId: string){
-  //   ctx.font = "5px Arial";
-  //   ctx.fillStyle = "red";
-  //   for(let shelf of this.shelves){
-  //     let shelfId: string = shelf.id;
-  //     for(let coord of shelf.shelfCoordinates){
-  //       if(cameraId === coord.cameraId ){
-  //         //console.log("shelf id printed: "+shelfId+" cameraID = "+cameraId+" coord.cameraId = "+coord.cameraId);
-  //         //console.log("shelfId:"+shelfId+" x1:"+coord.x1+" y1"+coord.y1);
-  //         ctx.beginPath();
-  //         ctx.fillText(shelfId,coord.x1*.23,coord.y1*.23);
-  //         //ctx.rect(coord.x1*.23,coord.y1*.23,(coord.x4-coord.x1)*.23,(coord.y4-coord.y1)*.23);
-  //         //ctx.rect(coord.x1*.23,coord.y1*.23,20,20);
-  //         //ctx.strokeStyle = 'red';
-  //         //ctx.stroke();
-  //         ctx.closePath();
-  //         ctx.fill();
-  //       }
-  //     }
-  //
-  //   }
-  // }
-
   onRightArrowDown(){
-    let cameraId: string = this.imageService.getCameraId(this.cnt);
+    let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq++;
-    if(this.imageSeq < this.imageService.getImageListLength(cameraId)){
+    console.log("onRightArrowDown() called for camera "+cameraId+" "+this.imageSeq);
+    if(this.imageSeq < this.imageService.getImageListLength(cameraId, this.images)){
       this.renderCanvas(cameraId);
     }else{
-      this.imageSeq = -1;
+      //this.imageSeq = -1;
+      this.imageSeq = 0;
     }
   }
 
   onLeftArrowDown(){
-    let cameraId: string = this.imageService.getCameraId(this.cnt);
+    let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq--;
     if(this.imageSeq > 0){
       this.renderCanvas(cameraId);
@@ -174,15 +155,22 @@ export class OrderVerifyComponent implements OnInit {
     }
   }
 
+  onLoad(){
+    this.cameraInFocus = this.imageService.getCameraId(this.cnt, this.images);
+    this.renderCanvas(this.cameraInFocus);
+  }
+
   switchCamera(){
     this.cnt++;
-    this.imageSeq = -1;
+    //this.imageSeq = -1;
+    this.imageSeq = 0;
 
-    if(this.cnt == this.imageService.getNoOfCameras()){
+    if(this.cnt == this.imageService.getNoOfCameras(this.images)){
       this.cnt = 0;
     }
-    this.cameraInFocus = this.imageService.getCameraId(this.cnt);
-    this.onRightArrowDown();
+    this.cameraInFocus = this.imageService.getCameraId(this.cnt, this.images);
+    //this.onRightArrowDown();
+    this.renderCanvas(this.cameraInFocus);
   }
   onSubmit(){
     this.orderService.updateOrder(this.order).subscribe();

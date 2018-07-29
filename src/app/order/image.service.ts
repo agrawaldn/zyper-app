@@ -11,7 +11,7 @@ import { DatePipe } from '@angular/common';
 @Injectable()
 export class ImageService {
 
-  private images: OrderImage[];
+  //private images: OrderImage[];
 
   private apiUrl = 'http://localhost:8080/images';
 
@@ -25,50 +25,92 @@ export class ImageService {
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
 
-   getAllImages(orderId: string) {
-     this.findAll(orderId).subscribe(
-       images => {
-         this.images = images;
-       },
-       err => {
-         console.log(err);
-       }
-     );
+   // getAllImages(orderId: string) {
+   //   this.findAll(orderId).subscribe(
+   //     images => {
+   //       this.images = images;
+   //     },
+   //     err => {
+   //       console.log(err);
+   //     }
+   //   );
+   // }
+
+   getCameraId(idx: number, images: OrderImage[]): string{
+      return images[idx].cameraId;
    }
-  getCameraId(idx: number): string{
-     return this.images[idx].cameraId;
-  }
-  getNoOfCameras(): number{
-     return this.images.length;
-  }
-  getImageList(cameraId: string): ImageDetail[]{
-    for (let image of this.images) {
-      if(image.cameraId == cameraId){
-        return image.imageDetails;
-      }
-    }
-  }
-  getTimestamp(cameraId: string, idx: number){
-    let imgList: ImageDetail[] =  this.getImageList(cameraId);
-    return imgList[idx].timestamp;
-  }
+   getNoOfCameras(images: OrderImage[]): number{
+      return images.length;
+   }
+   getImageList(cameraId: string, images: OrderImage[]): ImageDetail[]{
+     for (let image of images) {
+       if(image.cameraId == cameraId){
+         return image.imageDetails;
+       }
+     }
+   }
+   getTimestamp(cameraId: string, idx: number, images: OrderImage[]){
+     let imgList: ImageDetail[] =  this.getImageList(cameraId, images);
+     return imgList[idx].timestamp;
+   }
 
-  getReadableTimestamp(cameraId: string, idx: number ){
-    let datepipe: DatePipe = new DatePipe('en-us');
-    let d: Date = new Date(0);
-    let ts = this.getTimestamp(cameraId, idx);
-    d.setTime(+ts);
-    let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss.SSS');
-    return ds;
-  }
+   getReadableTimestamp(cameraId: string, idx: number, images: OrderImage[] ){
+     let datepipe: DatePipe = new DatePipe('en-us');
+     let d: Date = new Date(0);
+     let ts = this.getTimestamp(cameraId, idx, images);
+     d.setTime(+ts);
+     let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss.SSS');
+     return ds;
+   }
 
-  getImage(cameraId: string, idx: number ){
-    let imgList: ImageDetail[] =  this.getImageList(cameraId);
-    return imgList[idx].imageURL;
-  }
+   getImage(cameraId: string, idx: number, images: OrderImage[] ){
+     let imgList: ImageDetail[] =  this.getImageList(cameraId, images);
+     return imgList[idx].imageURL;
+   }
 
-  getImageListLength(cameraId: string): number{
-    let imgList: ImageDetail[] =  this.getImageList(cameraId);
-    return imgList.length;
-  }
+   getImageListLength(cameraId: string, images: OrderImage[]): number{
+     let imgList: ImageDetail[] =  this.getImageList(cameraId, images);
+     return imgList.length;
+   }
+
+
+
+
+
+  // getCameraId(idx: number): string{
+  //    return this.images[idx].cameraId;
+  // }
+  // getNoOfCameras(): number{
+  //    return this.images.length;
+  // }
+  // getImageList(cameraId: string): ImageDetail[]{
+  //   for (let image of this.images) {
+  //     if(image.cameraId == cameraId){
+  //       return image.imageDetails;
+  //     }
+  //   }
+  // }
+  // getTimestamp(cameraId: string, idx: number){
+  //   let imgList: ImageDetail[] =  this.getImageList(cameraId);
+  //   return imgList[idx].timestamp;
+  // }
+  //
+  // getReadableTimestamp(cameraId: string, idx: number ){
+  //   let datepipe: DatePipe = new DatePipe('en-us');
+  //   let d: Date = new Date(0);
+  //   let ts = this.getTimestamp(cameraId, idx);
+  //   d.setTime(+ts);
+  //   let ds = datepipe.transform(d,'MM/dd/yy-HH:mm:ss.SSS');
+  //   return ds;
+  // }
+  //
+  // getImage(cameraId: string, idx: number ){
+  //   let imgList: ImageDetail[] =  this.getImageList(cameraId);
+  //   return imgList[idx].imageURL;
+  // }
+  //
+  // getImageListLength(cameraId: string): number{
+  //   let imgList: ImageDetail[] =  this.getImageList(cameraId);
+  //   return imgList.length;
+  // }
 }
