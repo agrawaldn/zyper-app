@@ -12,6 +12,9 @@ export class OrderEvent{
   rproductRemoved: string;
   rproductQuantity: number;
 
+  lshelf: string;
+  rshelf: string;
+
  constructor(camera: string, timestamp: string){
   this.camera = camera;
   this.timestamp = timestamp;

@@ -4,6 +4,7 @@ import { Http, Response } from "@angular/http";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from "rxjs";
+import { Shelf } from "./Shelf";
 
 @Injectable()
 export class LookupService {
@@ -14,6 +15,12 @@ export class LookupService {
 
   lookupProducts(): Observable<Product[]>  {
     return this.http.get(this.apiUrl+"/product")
+      .map((res:Response) => res.json())
+      .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+  lookupShelves(): Observable<Shelf[]>  {
+    return this.http.get(this.apiUrl+"/shelf")
       .map((res:Response) => res.json())
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }

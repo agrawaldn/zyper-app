@@ -11,6 +11,7 @@ import { FormControl, FormGroup, Validators} from "@angular/forms";
 import { ViewChild, ElementRef } from '@angular/core';
 import { Product } from "../Product";
 import { LookupService } from "../lookup.service";
+import { Shelf } from "../Shelf";
 
 @Component({
   selector: 'app-order-verify',
@@ -23,6 +24,7 @@ export class OrderVerifyComponent implements OnInit {
 
   //selectedProduct:Product = new Product('-1', 'Select Product');
   products: Product[];
+  shelves: Shelf[];
 
   order: Order = new Order("","","","",[new OrderItem("",0,0)]);
   id: string;
@@ -31,17 +33,7 @@ export class OrderVerifyComponent implements OnInit {
   cnt: number = 0;
   cameraInFocus: string;
   timestamp: string;
-/*
-  public url = 'http://localhost:8080/lookup/product';
-  params = {
-  hl: 'en',
-  ds: 'yt',
-  xhr: 't',
-  client: 'youtube'
-};
-  public search = 'oren';
-  result$;
-*/
+
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
@@ -73,6 +65,14 @@ export class OrderVerifyComponent implements OnInit {
        console.log(error);
       }
      );
+     //populate shelves
+     this.lookupService.lookupShelves().subscribe(
+     shelves => {
+         this.shelves = shelves;
+      },error => {
+       console.log(error);
+      }
+     );
      //this.order.orderEvents = [new OrderEvent("CAM1","TIMESTAMP1"),new OrderEvent("CAM2","TIMESTAMP2")];
      this.imageService.getAllImages(this.id);
      this.cameraInFocus = this.imageService.getCameraId(this.cnt);
@@ -85,24 +85,74 @@ export class OrderVerifyComponent implements OnInit {
   renderCanvas(cameraId: string) {
      let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
      var canvas = ctx.canvas ;
+     canvas.width = 1280;
+     canvas.height = 720;
      let img: HTMLImageElement = new Image();
      img.src = this.imageService.getImage(cameraId,this.imageSeq);
      //ctx.clearRect(0, 0, 960, 540);
+
      img.onload = function() {
         ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
      };
+     let shelves: Shelf[] = this.shelves;
      let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId);
-     ctx.beginPath();
      let tx: number = imgList[this.imageSeq].tx;
      let ty: number = imgList[this.imageSeq].ty;
      let by: number = imgList[this.imageSeq].by;
      let bx: number = imgList[this.imageSeq].bx;
-     ctx.rect(tx*.23,ty*.23,(bx-tx)*.23,(by-ty)*.23);
-     ctx.strokeStyle = 'yellow';
-     ctx.stroke();
-     //ctx.fill();
+     let ratio: number = 1;
+     setTimeout(function(){
+                          //console.log("settimeout called");
+                           //ctx.clearRect(0, 0, 960, 540);
+                           ctx.font = "15px Arial";
+                           //ctx.fillStyle = "red";
+                           ctx.strokeStyle = 'red';
+                           //ctx.lineWidth = 0.5;
+                           for(let shelf of shelves){
+                              let shelfId: string = shelf.id;
+                              for(let coord of shelf.shelfCoordinates){
+                                if(cameraId === coord.cameraId ){
+                                  ctx.beginPath();
+                                  //ctx.fillText(shelfId,coord.x1*.23,coord.y1*.23);
+                                  ctx.strokeText(shelfId,coord.x1*ratio,coord.y1*ratio);
+                                  ctx.closePath();
+                                }
+                              }
+                           }
+                           ctx.beginPath();
+                           ctx.rect(tx*ratio,ty*ratio,(bx-tx)*ratio,(by-ty)*ratio);
+                           ctx.strokeStyle = 'yellow';
+                           ctx.stroke();
+                           ctx.closePath();
+
+      },100);
+     //this.markShelves(ctx,cameraId);
+
      this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq);
   }
+
+  // markShelves(ctx: CanvasRenderingContext2D, cameraId: string){
+  //   ctx.font = "5px Arial";
+  //   ctx.fillStyle = "red";
+  //   for(let shelf of this.shelves){
+  //     let shelfId: string = shelf.id;
+  //     for(let coord of shelf.shelfCoordinates){
+  //       if(cameraId === coord.cameraId ){
+  //         //console.log("shelf id printed: "+shelfId+" cameraID = "+cameraId+" coord.cameraId = "+coord.cameraId);
+  //         //console.log("shelfId:"+shelfId+" x1:"+coord.x1+" y1"+coord.y1);
+  //         ctx.beginPath();
+  //         ctx.fillText(shelfId,coord.x1*.23,coord.y1*.23);
+  //         //ctx.rect(coord.x1*.23,coord.y1*.23,(coord.x4-coord.x1)*.23,(coord.y4-coord.y1)*.23);
+  //         //ctx.rect(coord.x1*.23,coord.y1*.23,20,20);
+  //         //ctx.strokeStyle = 'red';
+  //         //ctx.stroke();
+  //         ctx.closePath();
+  //         ctx.fill();
+  //       }
+  //     }
+  //
+  //   }
+  // }
 
   onRightArrowDown(){
     let cameraId: string = this.imageService.getCameraId(this.cnt);
@@ -148,9 +198,9 @@ export class OrderVerifyComponent implements OnInit {
     e.lprodAdd = false;
     e.rprodAdd = false;
     e.lproduct = "";
-    //e.lquantity= "";
+    e.lquantity= 0;
     e.rproduct = "";
-    //e.rquantity= "";
+    e.rquantity= 0;
     if(this.order.orderAnnotations == undefined){
         this.order.orderAnnotations = new Array<OrderAnnotation>();
     }
@@ -187,30 +237,37 @@ export class OrderVerifyComponent implements OnInit {
     if(orderAnnotation.rho){
       oe.movements = oe.movements+"rho ";
     }
-    let lprod: string = orderAnnotation.lproduct;
-    oe.lproductQuantity = orderAnnotation.lquantity;
 
+    if(orderAnnotation.lquantity > 0){
+      oe.lproductQuantity = orderAnnotation.lquantity;
+    }
+
+    let lprod: string = orderAnnotation.lproduct;
     if(orderAnnotation.lprodAdd){
       oe.lproductAdded = lprod;
     }else{
       oe.lproductRemoved = lprod;
     }
+
+    if(orderAnnotation.rquantity > 0){
+      oe.rproductQuantity = orderAnnotation.rquantity;
+    }
+
     let rprod: string = orderAnnotation.rproduct;
-    oe.rproductQuantity = orderAnnotation.rquantity;
     if(orderAnnotation.rprodAdd){
       oe.rproductAdded = rprod;
     }else{
       oe.rproductRemoved = rprod;
     }
+
+    oe.lshelf = orderAnnotation.lshelf;
+    oe.rshelf = orderAnnotation.rshelf;
+
     this.order.orderEvents.push(oe);
     this.order.orderAnnotations = new Array<OrderAnnotation>();
-    // this.onLeftArrowDown();
-    // this.onRightArrowDown();
+    this.onLeftArrowDown();
+    this.onRightArrowDown();
   }
-
-  // handleResultSelected(result) {
-  //   this.search = result;
-  // }
 
   redirectOrderPage() {
     this.router.navigate(['/order']);

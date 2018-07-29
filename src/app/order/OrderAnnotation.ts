@@ -1,3 +1,4 @@
+import { Shelf } from "./Shelf";
 
 export class OrderAnnotation{
   camera: string;
@@ -12,6 +13,8 @@ export class OrderAnnotation{
   rproduct: string;
   lquantity: number;
   rquantity: number;
+  lshelf: string;
+  rshelf: string;
 
  constructor(camera: string, timestamp: string){
   this.camera = camera;

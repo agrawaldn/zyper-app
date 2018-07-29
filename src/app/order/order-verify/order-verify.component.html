@@ -80,6 +80,13 @@
                 <label><input type="radio" name="lproductAddRemove" [value]="true" [(ngModel)]="evnt.lprodAdd"></label>
           </td><td><label>Remove:</label>
                 <label><input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd"></label>
+          </td><td><label>Shelf:</label>
+          </td><td>
+            <select name="lshelf" [(ngModel)]="evnt.lshelf">
+              <option *ngFor="let shelf of shelves" value= {{shelf.id}}>
+                {{shelf.id}}
+              </option>
+            </select>
           </td><td><label>Product:</label>
           <!--</td><td><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">-->
           </td><td>
@@ -106,6 +113,13 @@
               <label><input type="radio" name="rproductAddRemove" [value]="true" [(ngModel)]="evnt.rprodAdd"></label>
           </td><td><label>Remove:</label>
               <label><input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd"></label>
+        </td><td><label>Shelf:</label>
+        </td><td>
+          <select name="rshelf" [(ngModel)]="evnt.rshelf">
+            <option *ngFor="let shelf of shelves" value= {{shelf.id}}>
+              {{shelf.id}}
+            </option>
+          </select>
         </td><td><label>Product:</label>
         <!--</td><td><input type="text" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">-->
         </td><td>
@@ -140,7 +154,7 @@
   <header class="header">
     <div class="row">
       <div class="col-md-4">
-        <h4>All Annotations For Curernt Order</h4>
+        <h4>Event List</h4>
       </div>
       <div class="col-md-4">
 
@@ -156,11 +170,13 @@
     <th>Camera</th>
     <th>Timestamp</th>
     <th>Movements</th>
-    <th>Left Hand Add</th>
-    <th>Left Hand Remove</th>
+    <th>Left Add</th>
+    <th>Left Rem</th>
+    <th>Left Shelf</th>
     <th>Quantity</th>
-    <th>Right Hand Add</th>
-    <th>Right Hand Remove</th>
+    <th>Right Add</th>
+    <th>Right Rem</th>
+    <th>Right Shelf</th>
     <th>Quantity</th>
     <th></th>
   </tr>
@@ -183,6 +199,9 @@
       {{ev.lproductRemoved}}
     </td>
     <td>
+      {{ev.lshelf}}
+    </td>
+    <td>
       {{ev.lproductQuantity}}
     </td>
     <td>
@@ -190,6 +209,9 @@
     </td>
     <td>
       {{ev.rproductRemoved}}
+    </td>
+    <td>
+      {{ev.rshelf}}
     </td>
     <td>
       {{ev.rproductQuantity}}
