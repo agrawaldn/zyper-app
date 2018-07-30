@@ -129,7 +129,7 @@ export class OrderVerifyComponent implements OnInit {
                            ctx.stroke();
                            ctx.closePath();
 
-      },100);
+      },500);
      this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq, this.images);
   }
 
@@ -157,6 +157,10 @@ export class OrderVerifyComponent implements OnInit {
 
   onLoad(){
     this.cameraInFocus = this.imageService.getCameraId(this.cnt, this.images);
+    this.renderCanvas(this.cameraInFocus);
+  }
+
+  startStop(){
     this.renderCanvas(this.cameraInFocus);
   }
 

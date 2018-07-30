@@ -13,7 +13,7 @@ export class ImageService {
 
   //private images: OrderImage[];
 
-  private apiUrl = 'http://localhost:8080/images';
+  private apiUrl = 'http://localhost:8082/images';
 
   constructor(private http: Http) {
     //this.getAllImages();

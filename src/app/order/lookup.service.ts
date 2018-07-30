@@ -9,7 +9,7 @@ import { Shelf } from "./Shelf";
 @Injectable()
 export class LookupService {
 
-  private apiUrl = 'http://localhost:8080/lookup';
+  private apiUrl = 'http://localhost:8082/lookup';
 
   constructor(private http: Http) { }
 

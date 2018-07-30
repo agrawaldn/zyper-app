@@ -4,7 +4,7 @@
   <td>
     <!-- image display start-->
   <div id="imageCanvasDiv" class="item" (keydown.arrowright)="onRightArrowDown()"
-      (keydown.arrowleft)="onLeftArrowDown()">
+      (keydown.arrowleft)="onLeftArrowDown()" (click)="onRightArrowDown()">
     <canvas #myCanvas class="canvas-style">
     </canvas>
     <table class="table">
@@ -12,7 +12,8 @@
         <td>
           <label> Camera ID: </label> {{cameraInFocus}}
         </td><td>
-          <button type="button" align="center" class="btn btn-primary" (click)="switchCamera()">Switch Camera</button>
+          <button type="button" align="center" class="btn btn-primary" (click)="startStop()">Start/Stop</button>
+          <button type="button" align="center" class="btn btn-warning" (click)="switchCamera()">Switch Camera</button>
         </td>
         <td>
           <label> {{timestamp}} </label>
