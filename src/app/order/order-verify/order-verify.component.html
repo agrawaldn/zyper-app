@@ -4,7 +4,7 @@
   <td>
     <!-- image display start-->
   <div id="imageCanvasDiv" class="item" (keydown.arrowright)="onRightArrowDown()"
-      (keydown.arrowleft)="onLeftArrowDown()" (click)="onRightArrowDown()">
+      (keydown.arrowleft)="onLeftArrowDown()">
     <canvas #myCanvas class="canvas-style">
     </canvas>
     <table class="table">
@@ -66,7 +66,7 @@
   </header>
 </section>
 <div>
-<form novalidate (ngSubmit)="onSaveAnnotation()">
+<form novalidate [formGroup]="annotationForm" (ngSubmit)="onSaveAnnotation()">
 
 <table>
   <tr *ngFor="let evnt of order.orderAnnotations">
@@ -74,64 +74,65 @@
       <table class="table">
         <tr>
           <td><label><b>Left Hand</b> In:</label>
-                <input type="checkbox" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
+                <input type="checkbox" formControlName="lhi" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
           </td><td><label>Out:</label>
-                <input type="checkbox" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
+                <input type="checkbox" formControlName="lho" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
           </td><td><label>Add:</label>
-                <label><input type="radio" name="lproductAddRemove" [value]="true" [(ngModel)]="evnt.lprodAdd"></label>
+                <label><input type="radio" formControlName="lprodAdd" [value]="true" [(ngModel)]="evnt.lprodAdd"></label>
           </td><td><label>Remove:</label>
-                <label><input type="radio" name="lproductAddRemove" [value]="false" [(ngModel)]="evnt.lprodAdd"></label>
+                <label><input type="radio" formControlName="lprodAdd" [value]="false" [(ngModel)]="evnt.lprodAdd"></label>
           </td><td><label>Shelf:</label>
           </td><td>
-            <select name="lshelf" [(ngModel)]="evnt.lshelf">
+            <select name="lshelf" formControlName="lshelf" [(ngModel)]="evnt.lshelf">
               <option *ngFor="let shelf of shelves" value= {{shelf.id}}>
                 {{shelf.id}}
               </option>
             </select>
           </td><td><label>Product:</label>
-          <!--</td><td><input type="text" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">-->
-          </td><td>
+          </td><td><input type="text" formControlName="lproduct" [value]="evnt.lproduct" (input)="evnt.lproduct = $event.target.value">
+          <!--</td><td>
             <select name="lproduct" [(ngModel)]="evnt.lproduct">
               <option *ngFor="let product of products" value= {{product.productId}}>
                 {{product.productDesc}}
               </option>
             </select>
+            -->
 <!--          <div class="search-results">
             <input [value]="search" ngxTypeahead [taUrl]="url" [taParams]="params"
                               (taSelected)="handleResultSelected($event)"/>
           </div>
 -->
           </td><td><label>Quantity:</label>
-          </td><td><input type="text" [value]="evnt.lquantity" (input)="evnt.lquantity = $event.target.value">
+          </td><td><input type="text" formControlName="lquantity" [value]="evnt.lquantity" (input)="evnt.lquantity = $event.target.value">
           </td>
         </tr><tr>
         <td><label><b>Right Hand</b> In:</label>
-              <input type="checkbox" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
+              <input type="checkbox" formControlName="rhi" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
             </td><td><label>Out:</label>
-                <input type="checkbox" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
+                <input type="checkbox" formControlName="rho" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
 
         </td><td><label>Add:</label>
-              <label><input type="radio" name="rproductAddRemove" [value]="true" [(ngModel)]="evnt.rprodAdd"></label>
+              <label><input type="radio" formControlName="rprodAdd" [value]="true" [(ngModel)]="evnt.rprodAdd"></label>
           </td><td><label>Remove:</label>
-              <label><input type="radio" name="rproductAddRemove" [value]="false" [(ngModel)]="evnt.rprodAdd"></label>
+              <label><input type="radio" formControlName="rprodAdd" [value]="false" [(ngModel)]="evnt.rprodAdd"></label>
         </td><td><label>Shelf:</label>
         </td><td>
-          <select name="rshelf" [(ngModel)]="evnt.rshelf">
+          <select name="rshelf" formControlName="rshelf" [(ngModel)]="evnt.rshelf">
             <option *ngFor="let shelf of shelves" value= {{shelf.id}}>
               {{shelf.id}}
             </option>
           </select>
         </td><td><label>Product:</label>
-        <!--</td><td><input type="text" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">-->
-        </td><td>
+        </td><td><input type="text" formControlName="rproduct" [value]="evnt.rproduct" (input)="evnt.rproduct = $event.target.value">
+<!--        </td><td>
           <select name="rproduct" [(ngModel)]="evnt.rproduct">
             <option *ngFor="let product of products" value= {{product.productId}}>
               {{product.productDesc}}
             </option>
           </select>
-
+-->
           </td><td><label>Quantity:</label>
-          </td><td><input type="text" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
+          </td><td><input type="text" formControlName="rquantity" [value]="evnt.rquantity" (input)="evnt.rquantity = $event.target.value">
           </td>
         </tr>
       </table>

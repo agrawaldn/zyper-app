@@ -7,20 +7,23 @@ import { HashMap } from "hashmap";
 import { OrderImage } from "./OrderImage";
 import { ImageDetail } from "./ImageDetail";
 import { DatePipe } from '@angular/common';
+//import { Location } from '@angular/common';
 
 @Injectable()
 export class ImageService {
 
   //private images: OrderImage[];
 
+  //private apiUrl = '/images';
   private apiUrl = 'http://localhost:8082/images';
 
-  constructor(private http: Http) {
-    //this.getAllImages();
+  //constructor(private http: Http, private location: Location) {
+    constructor(private http: Http) {
   }
 
   findAll(id: string): Observable<OrderImage[]>  {
     return this.http.get(this.apiUrl+ '/' + id)
+    //return this.http.get(this.location.prepareExternalUrl(this.apiUrl+ '/' + id))
       .map((res:Response) => res.json())
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }

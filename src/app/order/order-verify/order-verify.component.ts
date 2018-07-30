@@ -36,12 +36,30 @@ export class OrderVerifyComponent implements OnInit {
   cameraInFocus: string;
   timestamp: string;
 
+  annotationForm: FormGroup;
+
   constructor(private route: ActivatedRoute,
               private router: Router,
               private orderService: OrderService,
               private imageService: ImageService,
               private lookupService: LookupService) {
 
+                //initialize form
+                this.annotationForm = new FormGroup({
+                  lhi: new FormControl('')
+                  ,lho: new FormControl('')
+                  ,rhi: new FormControl('')
+                  ,rho: new FormControl('')
+                  ,lprodAdd: new FormControl('')
+                  ,rprodAdd: new FormControl('')
+                  ,lproduct: new FormControl('')
+                  ,rproduct: new FormControl('')
+                  ,lquantity: new FormControl('',Validators.pattern("[1-9][0-9]{0,4}"))
+                  ,rquantity: new FormControl('',Validators.pattern("[1-9][0-9]{0,4}"))
+                  ,lshelf: new FormControl('')
+                  ,rshelf: new FormControl('')
+
+                });
   }
 
   ngOnInit() {
@@ -197,14 +215,11 @@ export class OrderVerifyComponent implements OnInit {
         this.order.orderAnnotations = new Array<OrderAnnotation>();
     }
     this.order.orderAnnotations.push(e);
-    // this.onLeftArrowDown();
-    // this.onRightArrowDown();
+
   }
 
   onAnnotationRemove(orderAnnotation: OrderAnnotation){
     this.order.orderAnnotations = this.order.orderAnnotations.filter(x => x.timestamp !== orderAnnotation.timestamp);
-    // this.onLeftArrowDown();
-    // this.onRightArrowDown();
   }
 
   onEventDelete(oe: OrderEvent){
@@ -212,53 +227,53 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   onSaveAnnotation(orderAnnotation: OrderAnnotation){
-    if(this.order.orderEvents == undefined){
-      this.order.orderEvents = new Array<OrderEvent>();
-    }
-    let oe: OrderEvent = new OrderEvent(orderAnnotation.camera,orderAnnotation.timestamp);
-    oe.movements="";
-    if(orderAnnotation.lhi){
-      oe.movements = oe.movements+"lhi ";
-    }
-    if(orderAnnotation.lho){
-      oe.movements = oe.movements+"lho ";
-    }
-    if(orderAnnotation.rhi){
-      oe.movements = oe.movements+"rhi ";
-    }
-    if(orderAnnotation.rho){
-      oe.movements = oe.movements+"rho ";
-    }
+    if (this.annotationForm.valid) {
+      if(this.order.orderEvents == undefined){
+        this.order.orderEvents = new Array<OrderEvent>();
+      }
+      let oe: OrderEvent = new OrderEvent(orderAnnotation.camera,orderAnnotation.timestamp);
+      oe.movements="";
+      if(orderAnnotation.lhi){
+        oe.movements = oe.movements+"lhi ";
+      }
+      if(orderAnnotation.lho){
+        oe.movements = oe.movements+"lho ";
+      }
+      if(orderAnnotation.rhi){
+        oe.movements = oe.movements+"rhi ";
+      }
+      if(orderAnnotation.rho){
+        oe.movements = oe.movements+"rho ";
+      }
 
-    if(orderAnnotation.lquantity > 0){
-      oe.lproductQuantity = orderAnnotation.lquantity;
+      if(orderAnnotation.lquantity > 0){
+        oe.lproductQuantity = orderAnnotation.lquantity;
+      }
+
+      let lprod: string = orderAnnotation.lproduct;
+      if(orderAnnotation.lprodAdd){
+        oe.lproductAdded = lprod;
+      }else{
+        oe.lproductRemoved = lprod;
+      }
+
+      if(orderAnnotation.rquantity > 0){
+        oe.rproductQuantity = orderAnnotation.rquantity;
+      }
+
+      let rprod: string = orderAnnotation.rproduct;
+      if(orderAnnotation.rprodAdd){
+        oe.rproductAdded = rprod;
+      }else{
+        oe.rproductRemoved = rprod;
+      }
+
+      oe.lshelf = orderAnnotation.lshelf;
+      oe.rshelf = orderAnnotation.rshelf;
+
+      this.order.orderEvents.push(oe);
+      this.order.orderAnnotations = new Array<OrderAnnotation>();
     }
-
-    let lprod: string = orderAnnotation.lproduct;
-    if(orderAnnotation.lprodAdd){
-      oe.lproductAdded = lprod;
-    }else{
-      oe.lproductRemoved = lprod;
-    }
-
-    if(orderAnnotation.rquantity > 0){
-      oe.rproductQuantity = orderAnnotation.rquantity;
-    }
-
-    let rprod: string = orderAnnotation.rproduct;
-    if(orderAnnotation.rprodAdd){
-      oe.rproductAdded = rprod;
-    }else{
-      oe.rproductRemoved = rprod;
-    }
-
-    oe.lshelf = orderAnnotation.lshelf;
-    oe.rshelf = orderAnnotation.rshelf;
-
-    this.order.orderEvents.push(oe);
-    this.order.orderAnnotations = new Array<OrderAnnotation>();
-    this.onLeftArrowDown();
-    this.onRightArrowDown();
   }
 
   redirectOrderPage() {
