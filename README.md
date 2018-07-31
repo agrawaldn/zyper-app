@@ -1,12 +1,17 @@
-# DEV Environment setup
-Run git clone to download project
-'cd zyper-app'
-Run 'npm install' to download dependencies
-Run 'ng serve' to start the server
+## Build instructions for tomcat
+#Prerequisites: 1) git client is installed on build machine 2) maven is installed on build machine
+Run `git clone https://github.com/agrawaldn/zyper-app.git` to download project
+Run `cd zyper-app` 
+Run `mvn clean package` This will generate deployable zyper-app.war inside target directory, that can be deployed onto tomcat server
+Befor deploying, make sure that you edit and update index.html inside war file to change `<base href="/">`  to `<base href=".">` ng build that is run my mvn command generates incorrect href. Application will not load if you use "/"
+copy `zyper-app.war` to webapps directory of tomcat. Usually under `/opt/tomcat/webapps`
+
+Please note that production build needs to be manually generated using `--configuration=production` flag while running ng build command. See instructions below.
+If you need to update ApiUrl for production then edit it first under `src/environments/environment.prod.ts` and `src/environments/environment.ts` for development environment.
 
 # ZyperApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+This project contains frontend code (client) for zyper application. Currently it has only order module containing 2 components order-list and order-verify
 
 ## Development server
 
@@ -18,7 +23,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `ng build --configuration=production` command for a production build.
 
 ## Running unit tests
 

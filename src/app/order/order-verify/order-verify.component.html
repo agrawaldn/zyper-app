@@ -74,9 +74,9 @@
       <table class="table">
         <tr>
           <td><label><b>Left Hand</b> In:</label>
-                <input type="checkbox" formControlName="lhi" [value]="evnt.lhi" (input)="evnt.lhi = $event.target.value">
+                <input type="checkbox" formControlName="lhi" [value]="evnt.lhi" [(ngModel)]="evnt.lhi">
           </td><td><label>Out:</label>
-                <input type="checkbox" formControlName="lho" [value]="evnt.lho" (input)="evnt.lho = $event.target.value">
+                <input type="checkbox" formControlName="lho" [value]="evnt.lho" [(ngModel)]="evnt.lho">
           </td><td><label>Add:</label>
                 <label><input type="radio" formControlName="lprodAdd" [value]="true" [(ngModel)]="evnt.lprodAdd"></label>
           </td><td><label>Remove:</label>
@@ -107,9 +107,9 @@
           </td>
         </tr><tr>
         <td><label><b>Right Hand</b> In:</label>
-              <input type="checkbox" formControlName="rhi" [value]="evnt.rhi" (input)="evnt.rhi = $event.target.value">
+              <input type="checkbox" formControlName="rhi" [value]="evnt.rhi" [(ngModel)]="evnt.rhi">
             </td><td><label>Out:</label>
-                <input type="checkbox" formControlName="rho" [value]="evnt.rho" (input)="evnt.rho = $event.target.value">
+                <input type="checkbox" formControlName="rho" [value]="evnt.rho" [(ngModel)]="evnt.rho">
 
         </td><td><label>Add:</label>
               <label><input type="radio" formControlName="rprodAdd" [value]="true" [(ngModel)]="evnt.rprodAdd"></label>

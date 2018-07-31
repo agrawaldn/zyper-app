@@ -205,7 +205,7 @@ export class OrderVerifyComponent implements OnInit {
     e.lho = false;
     e.rhi = false;
     e.rho = false;
-    e.lprodAdd = false;
+    e.lprodAdd = true;
     e.rprodAdd = false;
     e.lproduct = "";
     e.lquantity= 0;
@@ -273,6 +273,7 @@ export class OrderVerifyComponent implements OnInit {
 
       this.order.orderEvents.push(oe);
       this.order.orderAnnotations = new Array<OrderAnnotation>();
+      this.annotationForm.reset();
     }
   }
 
