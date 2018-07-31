@@ -4,9 +4,9 @@ import { OrderListComponent } from './order-list/order-list.component';
 import { OrderVerifyComponent } from './order-verify/order-verify.component';
 
 const routes: Routes = [
-  {path: 'order', component: OrderListComponent},
-  {path: 'order/verify', component: OrderVerifyComponent},
-  {path: 'order/verify/:id', component: OrderVerifyComponent}
+  {path: '', component: OrderListComponent},
+  {path: 'verify', component: OrderVerifyComponent},
+  {path: 'verify/:id', component: OrderVerifyComponent}
 ];
 
 @NgModule({

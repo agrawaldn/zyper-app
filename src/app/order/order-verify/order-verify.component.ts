@@ -277,7 +277,7 @@ export class OrderVerifyComponent implements OnInit {
   }
 
   redirectOrderPage() {
-    this.router.navigate(['/order']);
+    this.router.navigate(['/']);
 
   }
 

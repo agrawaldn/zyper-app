@@ -32,7 +32,7 @@ export class OrderListComponent implements OnInit {
 
   verifyOrderPage(order: Order) {
     if (order) {
-      this.router.navigate(['/order/verify', order.orderId]);
+      this.router.navigate(['/verify', order.orderId]);
     }
   }
 
