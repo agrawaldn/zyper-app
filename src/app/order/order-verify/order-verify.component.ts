@@ -21,8 +21,11 @@ import { OrderImage } from "../OrderImage";
   providers: [OrderService, ImageService, LookupService]
 })
 export class OrderVerifyComponent implements OnInit {
-  @ViewChild('myCanvas') canvasRef: ElementRef;
-
+  @ViewChild('currentCanvas') currentCanvas: ElementRef;
+  @ViewChild('prevCanvas') prevCanvas: ElementRef;
+  @ViewChild('nextCanvas') nextCanvas: ElementRef;
+  // @ViewChild('canvasDiv') canvasDivRef: ElementRef;
+  // @ViewChild('canvasDiv1') canvasDivRef1: ElementRef;
   //selectedProduct:Product = new Product('-1', 'Select Product');
   products: Product[];
   shelves: Shelf[];
@@ -37,6 +40,9 @@ export class OrderVerifyComponent implements OnInit {
   timestamp: string;
 
   annotationForm: FormGroup;
+  forward: boolean;
+  // hideCanvas1: boolean = false;
+  // hideCanvas2: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -106,55 +112,71 @@ export class OrderVerifyComponent implements OnInit {
      }
 
   }
+loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
+  var canvas1 = ctx.canvas ;
+  canvas1.width = 1280;
+  canvas1.height = 720;
+  let img: HTMLImageElement = new Image();
+  img.src = this.imageService.getImage(cameraId,imageSeq, this.images);
 
-  renderCanvas(cameraId: string) {
-     let ctx: CanvasRenderingContext2D = this.canvasRef.nativeElement.getContext('2d');
-     var canvas = ctx.canvas ;
-     canvas.width = 1280;
-     canvas.height = 720;
-     let img: HTMLImageElement = new Image();
-     img.src = this.imageService.getImage(cameraId,this.imageSeq, this.images);
-     //ctx.clearRect(0, 0, 960, 540);
-
-     img.onload = function() {
-        ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
-     };
-     let shelves: Shelf[] = this.shelves;
-     let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId, this.images);
-     let tx: number = imgList[this.imageSeq].tx;
-     let ty: number = imgList[this.imageSeq].ty;
-     let by: number = imgList[this.imageSeq].by;
-     let bx: number = imgList[this.imageSeq].bx;
-     let ratio: number = 1;
-     setTimeout(function(){
-                           ctx.font = "15px Arial";
-                           //ctx.fillStyle = "red";
-                           ctx.strokeStyle = 'red';
-                           for(let shelf of shelves){
-                              let shelfId: string = shelf.id;
-                              for(let coord of shelf.shelfCoordinates){
-                                if(cameraId === coord.cameraId ){
-                                  ctx.beginPath();
-                                  //ctx.fillText(shelfId,coord.x1*.23,coord.y1*.23);
-                                  ctx.strokeText(shelfId,coord.x1*ratio,coord.y1*ratio);
-                                  ctx.closePath();
-                                }
-                              }
+  img.onload = function() {
+     ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas1.width,canvas1.height);
+  };
+  let shelves: Shelf[] = this.shelves;
+  let imgList: ImageDetail[] =  this.imageService.getImageList(cameraId, this.images);
+  let tx: number = imgList[imageSeq].tx;
+  let ty: number = imgList[imageSeq].ty;
+  let by: number = imgList[imageSeq].by;
+  let bx: number = imgList[imageSeq].bx;
+  let ratio: number = 1;
+  setTimeout(function(){
+                        ctx.font = "15px Arial";
+                        ctx.strokeStyle = 'red';
+                        for(let shelf of shelves){
+                           let shelfId: string = shelf.id;
+                           for(let coord of shelf.shelfCoordinates){
+                             if(cameraId === coord.cameraId ){
+                               ctx.beginPath();
+                               ctx.strokeText(shelfId,coord.x1*ratio,coord.y1*ratio);
+                               ctx.closePath();
+                             }
                            }
-                           ctx.beginPath();
-                           ctx.rect(tx*ratio,ty*ratio,(bx-tx)*ratio,(by-ty)*ratio);
-                           ctx.strokeStyle = 'yellow';
-                           ctx.stroke();
-                           ctx.closePath();
+                        }
+                        ctx.beginPath();
+                        ctx.rect(tx*ratio,ty*ratio,(bx-tx)*ratio,(by-ty)*ratio);
+                        ctx.strokeStyle = 'yellow';
+                        ctx.stroke();
+                        ctx.closePath();
 
-      },500);
+   },500);
+
+}
+  renderCanvas(cameraId: string) {
+     let seq: number = this.imageSeq;
+     let currentCtx: CanvasRenderingContext2D = this.currentCanvas.nativeElement.getContext('2d');
+     let nextCtx: CanvasRenderingContext2D = this.nextCanvas.nativeElement.getContext('2d');
+     let prevCtx: CanvasRenderingContext2D = this.prevCanvas.nativeElement.getContext('2d');
+
+     if(seq>0){
+       if(this.forward){
+         currentCtx.drawImage(nextCtx.canvas,0,0);
+       }else{
+         currentCtx.drawImage(prevCtx.canvas,0,0);
+       }
+       this.loadCanvas(cameraId, prevCtx, seq-1);
+       this.loadCanvas(cameraId, nextCtx, seq+1);
+     }else{
+       this.loadCanvas(cameraId, prevCtx, seq);
+       this.loadCanvas(cameraId, currentCtx, seq);
+       this.loadCanvas(cameraId, nextCtx, seq+1);
+     }
      this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq, this.images);
   }
 
   onRightArrowDown(){
     let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq++;
-    console.log("onRightArrowDown() called for camera "+cameraId+" "+this.imageSeq);
+    this.forward = true;
     if(this.imageSeq < this.imageService.getImageListLength(cameraId, this.images)){
       this.renderCanvas(cameraId);
     }else{
@@ -166,6 +188,7 @@ export class OrderVerifyComponent implements OnInit {
   onLeftArrowDown(){
     let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq--;
+    this.forward = false;
     if(this.imageSeq > 0){
       this.renderCanvas(cameraId);
     }else{

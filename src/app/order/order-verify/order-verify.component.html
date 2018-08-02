@@ -1,28 +1,31 @@
-
 <table class="table">
 <tr>
   <td>
     <!-- image display start-->
-  <div id="imageCanvasDiv" class="item" (keydown.arrowright)="onRightArrowDown()"
-      (keydown.arrowleft)="onLeftArrowDown()">
-    <canvas #myCanvas class="canvas-style">
-    </canvas>
-    <table class="table">
-      <tr>
-        <td>
-          <label> Camera ID: </label> {{cameraInFocus}}
-        </td><td>
-          <button type="button" align="center" class="btn btn-primary" (click)="startStop()">Start/Stop</button>
-          <button type="button" align="center" class="btn btn-warning" (click)="switchCamera()">Switch Camera</button>
-        </td>
-        <td>
-          <label> {{timestamp}} </label>
-        </td>
-      </tr>
-    </table>
+  <div #canvasDiv class="item" [class.hidden]="false" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()" >
+  <canvas #currentCanvas class="canvas-style"></canvas>
+  <table class="table">
+    <tr>
+      <td>
+        <label> Camera ID: </label> {{cameraInFocus}}
+      </td><td>
+        <!--<button type="button" align="center" class="btn btn-primary" (click)="startStop()">Start/Stop</button>
+-->        <button type="button" align="center" class="btn btn-warning" (click)="switchCamera()">Switch Camera</button>
+      </td>
+      <td>
+        <label> {{timestamp}} </label>
+      </td>
+    </tr>
+  </table>
+
   </div>
-
-
+  <div #canvasDiv1 class="item" [class.hidden]="true" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()">
+  <canvas #prevCanvas class="canvas-style"></canvas>
+  </div>
+  
+  <div #canvasDiv1 class="item" [class.hidden]="true" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()">
+  <canvas #nextCanvas class="canvas-style"></canvas>
+  </div>
     <!-- image display end-->
   </td>
 <td>
@@ -57,6 +60,7 @@
 
 </tr>
 </table>
+
 <section>
   <header class="header">
     <div class="row">

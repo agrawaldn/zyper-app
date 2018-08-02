@@ -4,3 +4,7 @@
   border:2px solid black;
   background-size: contain;
 }
+
+.hidden {
+  display: none !important;
+}
