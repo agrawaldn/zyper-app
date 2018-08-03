@@ -22,7 +22,7 @@
   <div #canvasDiv1 class="item" [class.hidden]="true" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()">
   <canvas #prevCanvas class="canvas-style"></canvas>
   </div>
-  
+
   <div #canvasDiv1 class="item" [class.hidden]="true" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()">
   <canvas #nextCanvas class="canvas-style"></canvas>
   </div>
@@ -46,7 +46,7 @@
     </tr>
     <tr>
       <td>
-        <label>Order Date: </label>
+        <label>Order Timestamp: </label>
       </td>
       <td>  {{order.orderDate}} </td>
     </tr>
@@ -70,6 +70,9 @@
   </header>
 </section>
 <div>
+  <div class="alert alert-danger" [class.hidden]=!formErrorMsg>
+    {{formErrorMsg}}
+  </div>
 <form novalidate [formGroup]="annotationForm" (ngSubmit)="onSaveAnnotation()">
 
 <table>

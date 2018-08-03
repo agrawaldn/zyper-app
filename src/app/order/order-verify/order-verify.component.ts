@@ -24,9 +24,7 @@ export class OrderVerifyComponent implements OnInit {
   @ViewChild('currentCanvas') currentCanvas: ElementRef;
   @ViewChild('prevCanvas') prevCanvas: ElementRef;
   @ViewChild('nextCanvas') nextCanvas: ElementRef;
-  // @ViewChild('canvasDiv') canvasDivRef: ElementRef;
-  // @ViewChild('canvasDiv1') canvasDivRef1: ElementRef;
-  //selectedProduct:Product = new Product('-1', 'Select Product');
+
   products: Product[];
   shelves: Shelf[];
   private images: OrderImage[];
@@ -41,8 +39,7 @@ export class OrderVerifyComponent implements OnInit {
 
   annotationForm: FormGroup;
   forward: boolean;
-  // hideCanvas1: boolean = false;
-  // hideCanvas2: boolean = true;
+  formErrorMsg: string = "";
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -201,9 +198,9 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
     this.renderCanvas(this.cameraInFocus);
   }
 
-  startStop(){
-    this.renderCanvas(this.cameraInFocus);
-  }
+  // startStop(){
+  //   this.renderCanvas(this.cameraInFocus);
+  // }
 
   switchCamera(){
     this.cnt++;
@@ -249,8 +246,38 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
     this.order.orderEvents = this.order.orderEvents.filter(x => x.timestamp !== oe.timestamp);
   }
 
+  validateAnnotationForm(orderAnnotation: OrderAnnotation): boolean{
+    if((orderAnnotation.lhi || orderAnnotation.lho || orderAnnotation.lproduct) && !orderAnnotation.lshelf){
+        this.formErrorMsg = "Shelf is required for any hand event";
+        return false;
+    }
+    if((orderAnnotation.rhi || orderAnnotation.rho || orderAnnotation.rproduct) && !orderAnnotation.lshelf){
+        this.formErrorMsg = "Shelf is required for any hand event";
+        return false;
+    }
+    if(orderAnnotation.lproduct && orderAnnotation.lquantity <=0){
+      this.formErrorMsg = "Positive quantity is required when product is selected";
+      return false;
+    }
+    if(orderAnnotation.rproduct && orderAnnotation.rquantity <=0){
+      this.formErrorMsg = "Positive quantity is required when product is selected";
+      return false;
+    }
+    if(orderAnnotation.lshelf && !(orderAnnotation.lhi || orderAnnotation.lho || orderAnnotation.lproduct)){
+      this.formErrorMsg = "Any hand event is required if shelf is selected";
+      return false;
+    }
+    if(orderAnnotation.rshelf && !(orderAnnotation.rhi || orderAnnotation.rho || orderAnnotation.rproduct)){
+      this.formErrorMsg = "Any hand event is required if shelf is selected";
+      return false;
+    }
+    return true;
+
+  }
   onSaveAnnotation(orderAnnotation: OrderAnnotation){
-    if (this.annotationForm.valid) {
+
+    if (this.annotationForm.valid && this.validateAnnotationForm(orderAnnotation)) {
+      this.formErrorMsg = "";
       if(this.order.orderEvents == undefined){
         this.order.orderEvents = new Array<OrderEvent>();
       }
