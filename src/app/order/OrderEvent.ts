@@ -14,6 +14,7 @@ export class OrderEvent{
 
   lshelf: string;
   rshelf: string;
+  origTS: string;
 
  constructor(camera: string, timestamp: string){
   this.camera = camera;

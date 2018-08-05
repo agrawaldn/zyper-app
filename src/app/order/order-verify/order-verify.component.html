@@ -2,15 +2,15 @@
 <tr>
   <td>
     <!-- image display start-->
-  <div #canvasDiv class="item" [class.hidden]="false" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" (keydown.arrowleft)="onLeftArrowDown()" >
+  <div #canvasDiv class="item" [class.hidden]="false" tabIndex="1" (keydown.arrowright)="onRightArrowDown()" 
+      (keydown.arrowleft)="onLeftArrowDown()" (keydown.arrowup)="onUpArrowDown()" (keydown.arrowdown)="onDownArrowDown()">
   <canvas #currentCanvas class="canvas-style"></canvas>
   <table class="table">
     <tr>
       <td>
         <label> Camera ID: </label> {{cameraInFocus}}
       </td><td>
-        <!--<button type="button" align="center" class="btn btn-primary" (click)="startStop()">Start/Stop</button>
--->        <button type="button" align="center" class="btn btn-warning" (click)="switchCamera()">Switch Camera</button>
+        <button type="button" align="center" class="btn btn-warning" (click)="onUpArrowDown()">Switch Camera</button>
       </td>
       <td>
         <label> {{timestamp}} </label>
@@ -73,7 +73,7 @@
   <div class="alert alert-danger" [class.hidden]=!formErrorMsg>
     {{formErrorMsg}}
   </div>
-<form novalidate [formGroup]="annotationForm" (ngSubmit)="onSaveAnnotation()">
+<form novalidate [formGroup]="annotationForm">
 
 <table>
   <tr *ngFor="let evnt of order.orderAnnotations">

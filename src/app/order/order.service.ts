@@ -28,6 +28,7 @@ export class OrderService {
    }
 
   updateOrder(order: Order): Observable<Order> {
+    console.log("timestamp="+order.orderEvents[0].timestamp);
     return this.http.put(this.apiUrl, order)
       .map((res:Response) => res.json())
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));

@@ -5,6 +5,7 @@ import { OrderVerifyComponent } from './order-verify/order-verify.component';
 
 const routes: Routes = [
   {path: '', component: OrderListComponent},
+  {path: ':msg', component: OrderListComponent},
   {path: 'verify', component: OrderVerifyComponent},
   {path: 'verify/:id', component: OrderVerifyComponent}
 ];

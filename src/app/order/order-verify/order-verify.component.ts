@@ -36,10 +36,13 @@ export class OrderVerifyComponent implements OnInit {
   cnt: number;
   cameraInFocus: string;
   timestamp: string;
+  origTS: string;
 
   annotationForm: FormGroup;
   forward: boolean;
   formErrorMsg: string = "";
+  msg: string;
+  cameraSwitched: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -129,15 +132,17 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
   setTimeout(function(){
                         ctx.font = "15px Arial";
                         ctx.strokeStyle = 'red';
-                        for(let shelf of shelves){
-                           let shelfId: string = shelf.id;
-                           for(let coord of shelf.shelfCoordinates){
-                             if(cameraId === coord.cameraId ){
-                               ctx.beginPath();
-                               ctx.strokeText(shelfId,coord.x1*ratio,coord.y1*ratio);
-                               ctx.closePath();
-                             }
-                           }
+                        if(shelves){
+                          for(let shelf of shelves){
+                            let shelfId: string = shelf.id;
+                            for(let coord of shelf.shelfCoordinates){
+                              if(cameraId === coord.cameraId ){
+                                ctx.beginPath();
+                                ctx.strokeText(shelfId,coord.x1*ratio,coord.y1*ratio);
+                                ctx.closePath();
+                              }
+                            }
+                          }
                         }
                         ctx.beginPath();
                         ctx.rect(tx*ratio,ty*ratio,(bx-tx)*ratio,(by-ty)*ratio);
@@ -153,31 +158,31 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
      let currentCtx: CanvasRenderingContext2D = this.currentCanvas.nativeElement.getContext('2d');
      let nextCtx: CanvasRenderingContext2D = this.nextCanvas.nativeElement.getContext('2d');
      let prevCtx: CanvasRenderingContext2D = this.prevCanvas.nativeElement.getContext('2d');
-
-     if(seq>0){
-       if(this.forward){
-         currentCtx.drawImage(nextCtx.canvas,0,0);
-       }else{
-         currentCtx.drawImage(prevCtx.canvas,0,0);
-       }
-       this.loadCanvas(cameraId, prevCtx, seq-1);
-       this.loadCanvas(cameraId, nextCtx, seq+1);
-     }else{
-       this.loadCanvas(cameraId, prevCtx, seq);
-       this.loadCanvas(cameraId, currentCtx, seq);
-       this.loadCanvas(cameraId, nextCtx, seq+1);
+    if(seq==0 || this.cameraSwitched){
+      this.loadCanvas(cameraId, prevCtx, seq);
+      this.loadCanvas(cameraId, currentCtx, seq);
+      this.loadCanvas(cameraId, nextCtx, seq+1);
+    }else{
+      if(this.forward){
+        currentCtx.drawImage(nextCtx.canvas,0,0);
+      }else{
+        currentCtx.drawImage(prevCtx.canvas,0,0);
+      }
+      this.loadCanvas(cameraId, prevCtx, seq-1);
+      this.loadCanvas(cameraId, nextCtx, seq+1);
      }
      this.timestamp = this.imageService.getReadableTimestamp(cameraId,this.imageSeq, this.images);
+     this.origTS = this.imageService.getTimestamp(cameraId,this.imageSeq, this.images);
   }
 
   onRightArrowDown(){
     let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq++;
     this.forward = true;
+    this.cameraSwitched = false;
     if(this.imageSeq < this.imageService.getImageListLength(cameraId, this.images)){
       this.renderCanvas(cameraId);
     }else{
-      //this.imageSeq = -1;
       this.imageSeq = 0;
     }
   }
@@ -186,6 +191,7 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
     let cameraId: string = this.imageService.getCameraId(this.cnt, this.images);
     this.imageSeq--;
     this.forward = false;
+    this.cameraSwitched = false;
     if(this.imageSeq > 0){
       this.renderCanvas(cameraId);
     }else{
@@ -198,35 +204,52 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
     this.renderCanvas(this.cameraInFocus);
   }
 
-  // startStop(){
-  //   this.renderCanvas(this.cameraInFocus);
-  // }
-
-  switchCamera(){
+  onUpArrowDown(){
     this.cnt++;
-    //this.imageSeq = -1;
-    this.imageSeq = 0;
-
-    if(this.cnt == this.imageService.getNoOfCameras(this.images)){
+    if(this.cnt >= this.imageService.getNoOfCameras(this.images)){
       this.cnt = 0;
     }
     this.cameraInFocus = this.imageService.getCameraId(this.cnt, this.images);
-    //this.onRightArrowDown();
+    if(this.imageSeq >= this.imageService.getImageListLength(this.cameraInFocus, this.images)){
+      this.imageSeq = 0;
+    }
+    this.cameraSwitched = true; 
     this.renderCanvas(this.cameraInFocus);
   }
+
+  onDownArrowDown(){
+    this.cnt--;
+    if(this.cnt < 0){
+      this.cnt = this.imageService.getNoOfCameras(this.images)-1;
+    }
+    this.cameraInFocus = this.imageService.getCameraId(this.cnt, this.images);
+    if(this.imageSeq >= this.imageService.getImageListLength(this.cameraInFocus, this.images)){
+      this.imageSeq = 0;
+    } 
+    this.cameraSwitched = true;
+    this.renderCanvas(this.cameraInFocus);
+  }
+
   onSubmit(){
-    this.orderService.updateOrder(this.order).subscribe();
-    this.redirectOrderPage();
+    if(this.order.orderEvents && this.order.orderEvents.length>0){
+      this.orderService.updateOrder(this.order).subscribe();
+      this.msg = "SUCCESS - Order ID: "+this.order.orderId;
+      this.redirectOrderPage();
+    }else{
+      this.formErrorMsg = "Add atleast one annotation";
+    }
   }
 
   onAddAnnotation(){
+    this.formErrorMsg = "";
     let e = new OrderAnnotation(this.cameraInFocus,this.timestamp);
+    e.origTS = this.origTS;
     e.lhi = false;
     e.lho = false;
     e.rhi = false;
     e.rho = false;
     e.lprodAdd = true;
-    e.rprodAdd = false;
+    e.rprodAdd = true;
     e.lproduct = "";
     e.lquantity= 0;
     e.rproduct = "";
@@ -239,6 +262,7 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
   }
 
   onAnnotationRemove(orderAnnotation: OrderAnnotation){
+    this.formErrorMsg = "";
     this.order.orderAnnotations = this.order.orderAnnotations.filter(x => x.timestamp !== orderAnnotation.timestamp);
   }
 
@@ -247,19 +271,19 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
   }
 
   validateAnnotationForm(orderAnnotation: OrderAnnotation): boolean{
+    if(!orderAnnotation.lhi && !orderAnnotation.lho && !orderAnnotation.rhi && !orderAnnotation.rho){
+      this.formErrorMsg = "Select atleast one hand movement";
+      return false;
+    }
     if((orderAnnotation.lhi || orderAnnotation.lho || orderAnnotation.lproduct) && !orderAnnotation.lshelf){
         this.formErrorMsg = "Shelf is required for any hand event";
         return false;
     }
-    if((orderAnnotation.rhi || orderAnnotation.rho || orderAnnotation.rproduct) && !orderAnnotation.lshelf){
+    if((orderAnnotation.rhi || orderAnnotation.rho || orderAnnotation.rproduct) && !orderAnnotation.rshelf){
         this.formErrorMsg = "Shelf is required for any hand event";
         return false;
     }
-    if(orderAnnotation.lproduct && orderAnnotation.lquantity <=0){
-      this.formErrorMsg = "Positive quantity is required when product is selected";
-      return false;
-    }
-    if(orderAnnotation.rproduct && orderAnnotation.rquantity <=0){
+    if((orderAnnotation.lproduct && orderAnnotation.lquantity <=0)||(orderAnnotation.rproduct && orderAnnotation.rquantity <=0)){
       this.formErrorMsg = "Positive quantity is required when product is selected";
       return false;
     }
@@ -271,6 +295,10 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
       this.formErrorMsg = "Any hand event is required if shelf is selected";
       return false;
     }
+    if((orderAnnotation.rshelf && !orderAnnotation.rproduct)||(orderAnnotation.lshelf && !orderAnnotation.lproduct)){
+      this.formErrorMsg = "Product is required along with shelf";
+      return false;
+    }
     return true;
 
   }
@@ -278,22 +306,38 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
 
     if (this.annotationForm.valid && this.validateAnnotationForm(orderAnnotation)) {
       this.formErrorMsg = "";
+	//console.log("validation passed");
       if(this.order.orderEvents == undefined){
         this.order.orderEvents = new Array<OrderEvent>();
       }
+      console.log("timestamp="+orderAnnotation.timestamp);
       let oe: OrderEvent = new OrderEvent(orderAnnotation.camera,orderAnnotation.timestamp);
+      oe.origTS = orderAnnotation.origTS;
       oe.movements="";
       if(orderAnnotation.lhi){
-        oe.movements = oe.movements+"lhi ";
+        if(oe.movements){
+          oe.movements = oe.movements+",";
+        }
+        oe.movements = oe.movements+"lhi";
+
       }
       if(orderAnnotation.lho){
-        oe.movements = oe.movements+"lho ";
+        if(oe.movements){
+          oe.movements = oe.movements+",";
+        }
+        oe.movements = oe.movements+"lho";
       }
       if(orderAnnotation.rhi){
-        oe.movements = oe.movements+"rhi ";
+        if(oe.movements){
+          oe.movements = oe.movements+",";
+        }
+        oe.movements = oe.movements+"rhi";
       }
       if(orderAnnotation.rho){
-        oe.movements = oe.movements+"rho ";
+        if(oe.movements){
+          oe.movements = oe.movements+",";
+        }
+        oe.movements = oe.movements+"rho";
       }
 
       if(orderAnnotation.lquantity > 0){
@@ -324,11 +368,19 @@ loadCanvas(cameraId: string, ctx: CanvasRenderingContext2D, imageSeq: number){
       this.order.orderEvents.push(oe);
       this.order.orderAnnotations = new Array<OrderAnnotation>();
       this.annotationForm.reset();
+      
+    }else{
+	    //console.log(this.formErrorMsg);
     }
   }
 
   redirectOrderPage() {
-    this.router.navigate(['/']);
+    
+    if(this.msg){
+      this.router.navigate(['', this.msg]);
+    }else{
+      this.router.navigate(['']);
+    }
 
   }
 

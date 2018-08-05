@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  baseApiUrl: "http://localhost:8080/zyper-rest"
-  //baseApiUrl: "http://sf1.local:8080/zyper-rest"
+  //baseApiUrl: "http://localhost:8080/zyper-rest"
+  baseApiUrl: "http://sf1.local:8080/zyper-rest"
 
 };
 
